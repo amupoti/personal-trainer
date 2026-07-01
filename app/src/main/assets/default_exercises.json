@@ -1,0 +1,34 @@
+[
+  {
+    "id": "cat_cow",
+    "name": "Cat-cow",
+    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+    "targetValue": 10,
+    "targetUnit": "REPETITIONS",
+    "videoUrl": ""
+  },
+  {
+    "id": "bird_dog",
+    "name": "Bird dog",
+    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+    "targetValue": 8,
+    "targetUnit": "REPETITIONS",
+    "videoUrl": ""
+  },
+  {
+    "id": "hip_flexor",
+    "name": "Hip flexor stretch",
+    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+    "targetValue": 30,
+    "targetUnit": "SECONDS",
+    "videoUrl": ""
+  },
+  {
+    "id": "walk_run",
+    "name": "Walk or run",
+    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+    "targetValue": 20,
+    "targetUnit": "MINUTES",
+    "videoUrl": ""
+  }
+]
