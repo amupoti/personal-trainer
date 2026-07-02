@@ -2,9 +2,12 @@ package com.marcel.personaltrainer.data
 
 import android.content.Context
 import com.marcel.personaltrainer.model.Activity
+import com.marcel.personaltrainer.model.ReminderSettings
 import com.marcel.personaltrainer.model.TargetUnit
+import com.marcel.personaltrainer.model.remainingActivityCount
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalTime
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -48,6 +51,31 @@ class ProgressRepository(context: Context) {
         preferences.edit().putStringSet(date.toString(), updated).apply()
     }
 
+    fun reminderSettings(): ReminderSettings = ReminderSettings(
+        enabled = preferences.getBoolean(REMINDERS_ENABLED_KEY, false),
+        firstTime = storedTime(FIRST_REMINDER_TIME_KEY, ReminderSettings().firstTime),
+        secondTime = storedTime(SECOND_REMINDER_TIME_KEY, ReminderSettings().secondTime),
+    )
+
+    fun saveReminderSettings(settings: ReminderSettings) {
+        preferences.edit()
+            .putBoolean(REMINDERS_ENABLED_KEY, settings.enabled)
+            .putString(FIRST_REMINDER_TIME_KEY, settings.firstTime.toString())
+            .putString(SECOND_REMINDER_TIME_KEY, settings.secondTime.toString())
+            .apply()
+    }
+
+    fun remainingActivityCount(date: LocalDate): Int = remainingActivityCount(
+        activities = activities(),
+        completedIds = completedActivityIds(date),
+        date = date,
+    )
+
+    private fun storedTime(key: String, default: LocalTime): LocalTime =
+        preferences.getString(key, null)
+            ?.let { value -> runCatching { LocalTime.parse(value) }.getOrNull() }
+            ?: default
+
     private fun saveActivities(activities: List<Activity>) {
         val json = JSONArray()
         activities.forEach { activity ->
@@ -85,5 +113,8 @@ class ProgressRepository(context: Context) {
     private companion object {
         const val ACTIVITIES_KEY = "custom_activities"
         const val DEFAULT_ACTIVITIES_FILE = "default_exercises.json"
+        const val REMINDERS_ENABLED_KEY = "reminders_enabled"
+        const val FIRST_REMINDER_TIME_KEY = "first_reminder_time"
+        const val SECOND_REMINDER_TIME_KEY = "second_reminder_time"
     }
 }

@@ -1,34 +1,74 @@
 [
   {
-    "id": "cat_cow",
-    "name": "Cat-cow",
-    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
-    "targetValue": 10,
-    "targetUnit": "REPETITIONS",
-    "videoUrl": ""
-  },
-  {
-    "id": "bird_dog",
-    "name": "Bird dog",
-    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
-    "targetValue": 8,
-    "targetUnit": "REPETITIONS",
-    "videoUrl": ""
-  },
-  {
-    "id": "hip_flexor",
-    "name": "Hip flexor stretch",
+    "id": "hamstring_stretch",
+    "name": "Estirament d'isquios",
     "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
     "targetValue": 30,
     "targetUnit": "SECONDS",
     "videoUrl": ""
   },
   {
-    "id": "walk_run",
-    "name": "Walk or run",
+    "id": "glute_bridge",
+    "name": "Pont de glutis",
     "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
-    "targetValue": 20,
-    "targetUnit": "MINUTES",
+    "targetValue": 5,
+    "targetUnit": "REPETITIONS",
+    "videoUrl": ""
+  },
+  {
+    "id": "pelvic_tilt",
+    "name": "Basculació pèlvica",
+    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+    "targetValue": 5,
+    "targetUnit": "REPETITIONS",
+    "videoUrl": ""
+  },
+  {
+    "id": "cobra",
+    "name": "Cobra",
+    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+    "targetValue": 5,
+    "targetUnit": "REPETITIONS",
+    "videoUrl": ""
+  },
+  {
+    "id": "opposite_leg_pull",
+    "name": "Estirament de cama contrària",
+    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+    "targetValue": 5,
+    "targetUnit": "REPETITIONS",
+    "videoUrl": ""
+  },
+  {
+    "id": "band_arms",
+    "name": "Goma amb braços",
+    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+    "targetValue": 10,
+    "targetUnit": "REPETITIONS",
+    "videoUrl": ""
+  },
+  {
+    "id": "band_knees",
+    "name": "Goma amb genolls",
+    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+    "targetValue": 10,
+    "targetUnit": "REPETITIONS",
+    "videoUrl": ""
+  },
+  {
+    "id": "standing_table_leg_curl",
+    "name": "Dret amb taula: tirar el taló al cul pujant",
+    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+    "targetValue": 10,
+    "targetUnit": "REPETITIONS",
+    "videoUrl": ""
+  },
+  {
+    "id": "side_plank",
+    "name": "Planxa lateral",
+    "weekdays": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+    "targetValue": 6,
+    "targetUnit": "REPETITIONS",
     "videoUrl": ""
   }
 ]

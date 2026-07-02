@@ -1,23 +1,46 @@
 package com.marcel.personaltrainer.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.marcel.personaltrainer.ExerciseReminderScheduler
 import com.marcel.personaltrainer.data.ProgressRepository
 import com.marcel.personaltrainer.model.Activity
 import com.marcel.personaltrainer.model.CalendarPeriod
+import com.marcel.personaltrainer.model.ReminderSettings
 import com.marcel.personaltrainer.model.TargetUnit
 import com.marcel.personaltrainer.model.datesForPeriod
+import com.marcel.personaltrainer.model.timerDurationSeconds
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.UUID
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 data class DayProgress(
     val date: LocalDate,
     val completedCount: Int,
     val targetCount: Int,
 )
+
+data class ActivityTimer(
+    val activityId: String,
+    val totalSeconds: Long,
+    val remainingSeconds: Long,
+    val isRunning: Boolean,
+)
+
+enum class TimerSound {
+    COUNTDOWN,
+    COMPLETE,
+}
 
 data class ProgressUiState(
     val date: LocalDate = LocalDate.now(),
@@ -27,10 +50,13 @@ data class ProgressUiState(
     val calendarPeriod: CalendarPeriod = CalendarPeriod.WEEK,
     val calendarAnchorDate: LocalDate = date,
     val calendarDays: List<DayProgress> = emptyList(),
+    val timer: ActivityTimer? = null,
+    val reminderSettings: ReminderSettings = ReminderSettings(),
 )
 
 class ProgressViewModel(
     private val repository: ProgressRepository,
+    private val reminderScheduler: ExerciseReminderScheduler,
 ) : ViewModel() {
     private val date = LocalDate.now()
     private val _uiState = MutableStateFlow(
@@ -40,6 +66,13 @@ class ProgressViewModel(
         ),
     )
     val uiState: StateFlow<ProgressUiState> = _uiState.asStateFlow()
+    private val _timerSounds = MutableSharedFlow<TimerSound>(extraBufferCapacity = 8)
+    val timerSounds: SharedFlow<TimerSound> = _timerSounds.asSharedFlow()
+    private var timerJob: Job? = null
+
+    init {
+        reminderScheduler.sync(repository.reminderSettings())
+    }
 
     fun setCompleted(activityId: String, completed: Boolean) {
         repository.setCompleted(date, activityId, completed)
@@ -67,8 +100,65 @@ class ProgressViewModel(
     }
 
     fun deleteActivity(activityId: String) {
+        if (_uiState.value.timer?.activityId == activityId) {
+            timerJob?.cancel()
+            _uiState.value = _uiState.value.copy(timer = null)
+        }
         repository.deleteActivity(activityId)
         refreshActivities()
+    }
+
+    fun setRemindersEnabled(enabled: Boolean) {
+        updateReminderSettings(_uiState.value.reminderSettings.copy(enabled = enabled))
+    }
+
+    fun setReminderTime(index: Int, time: LocalTime) {
+        val current = _uiState.value.reminderSettings
+        updateReminderSettings(
+            if (index == 0) {
+                current.copy(firstTime = time)
+            } else {
+                current.copy(secondTime = time)
+            },
+        )
+    }
+
+    fun toggleTimer(activityId: String) {
+        val activity = _uiState.value.activities.find { it.id == activityId } ?: return
+        val totalSeconds = activity.timerDurationSeconds() ?: return
+        val current = _uiState.value.timer
+
+        if (current?.activityId == activityId && current.isRunning) {
+            timerJob?.cancel()
+            _uiState.value = _uiState.value.copy(timer = current.copy(isRunning = false))
+            return
+        }
+
+        val timer = if (current?.activityId == activityId && current.remainingSeconds > 0) {
+            current.copy(isRunning = true)
+        } else {
+            ActivityTimer(
+                activityId = activityId,
+                totalSeconds = totalSeconds,
+                remainingSeconds = totalSeconds,
+                isRunning = true,
+            )
+        }
+        startTimer(timer)
+    }
+
+    fun resetTimer(activityId: String) {
+        val activity = _uiState.value.activities.find { it.id == activityId } ?: return
+        val totalSeconds = activity.timerDurationSeconds() ?: return
+        timerJob?.cancel()
+        _uiState.value = _uiState.value.copy(
+            timer = ActivityTimer(
+                activityId = activityId,
+                totalSeconds = totalSeconds,
+                remainingSeconds = totalSeconds,
+                isRunning = false,
+            ),
+        )
     }
 
     fun setCalendarPeriod(period: CalendarPeriod) {
@@ -104,6 +194,7 @@ class ProgressViewModel(
             completedIds = completedIds.intersect(scheduled.map(Activity::id).toSet()),
             calendarAnchorDate = date,
             calendarDays = calendarProgress(date, CalendarPeriod.WEEK),
+            reminderSettings = repository.reminderSettings(),
         )
     }
 
@@ -135,6 +226,36 @@ class ProgressViewModel(
                 completedCount = repository.completedActivityIds(day).count(targetIds::contains),
                 targetCount = targetIds.size,
             )
+        }
+    }
+
+    private fun updateReminderSettings(settings: ReminderSettings) {
+        repository.saveReminderSettings(settings)
+        reminderScheduler.sync(settings)
+        _uiState.value = _uiState.value.copy(reminderSettings = settings)
+    }
+
+    private fun startTimer(timer: ActivityTimer) {
+        timerJob?.cancel()
+        _uiState.value = _uiState.value.copy(timer = timer)
+        timerJob = viewModelScope.launch {
+            var remaining = timer.remainingSeconds
+            while (remaining > 0) {
+                if (remaining <= 5) {
+                    _timerSounds.emit(TimerSound.COUNTDOWN)
+                }
+                delay(1_000)
+                remaining -= 1
+                val active = _uiState.value.timer
+                if (active?.activityId != timer.activityId) return@launch
+                _uiState.value = _uiState.value.copy(
+                    timer = active.copy(remainingSeconds = remaining),
+                )
+            }
+            _uiState.value = _uiState.value.copy(
+                timer = _uiState.value.timer?.copy(isRunning = false),
+            )
+            _timerSounds.emit(TimerSound.COMPLETE)
         }
     }
 }

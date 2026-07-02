@@ -11,16 +11,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -31,7 +38,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
-import java.util.Locale
 
 @Composable
 fun CalendarScreen(
@@ -43,15 +49,17 @@ fun CalendarScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 20.dp),
     ) {
-        Spacer(Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onPrevious) {
-                Text("<", style = MaterialTheme.typography.titleLarge)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                    contentDescription = "Previous period",
+                )
             }
             Text(
                 text = periodTitle(state.calendarAnchorDate, state.calendarPeriod),
@@ -61,18 +69,26 @@ fun CalendarScreen(
                 fontWeight = FontWeight.SemiBold,
             )
             IconButton(onClick = onNext) {
-                Text(">", style = MaterialTheme.typography.titleLarge)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                    contentDescription = "Next period",
+                )
             }
         }
-        PrimaryTabRow(
-            selectedTabIndex = state.calendarPeriod.ordinal,
-            modifier = Modifier.padding(horizontal = 32.dp),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             CalendarPeriod.entries.forEach { period ->
-                Tab(
+                FilterChip(
+                    modifier = Modifier.weight(1f),
                     selected = state.calendarPeriod == period,
                     onClick = { onPeriodChange(period) },
-                    text = { Text(period.name.lowercase().replaceFirstChar(Char::uppercase)) },
+                    label = {
+                        Text(period.name.lowercase().replaceFirstChar(Char::uppercase))
+                    },
                 )
             }
         }
@@ -85,12 +101,36 @@ fun CalendarScreen(
         Spacer(Modifier.height(20.dp))
         val completed = state.calendarDays.sumOf(DayProgress::completedCount)
         val targets = state.calendarDays.sumOf(DayProgress::targetCount)
-        Text(
-            text = "$completed of $targets target exercises completed",
+        Card(
             modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleMedium,
-        )
+            shape = MaterialTheme.shapes.medium,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+            ),
+        ) {
+            Column(modifier = Modifier.padding(18.dp)) {
+                Text(
+                    text = "Period progress",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "$completed of $targets exercises completed",
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                if (targets > 0) {
+                    Spacer(Modifier.height(12.dp))
+                    LinearProgressIndicator(
+                        progress = { completed.toFloat() / targets },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp),
+                        trackColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.55f),
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -101,7 +141,7 @@ private fun CalendarGrid(
     today: LocalDate,
 ) {
     WeekdayHeader()
-    Spacer(Modifier.height(6.dp))
+    Spacer(Modifier.height(8.dp))
 
     val leadingEmptyDays = when (period) {
         CalendarPeriod.WEEK -> 0
@@ -115,11 +155,11 @@ private fun CalendarGrid(
         }
     }
 
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         cells.chunked(7).forEach { week ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 week.forEach { day ->
                     Box(
@@ -139,13 +179,14 @@ private fun CalendarGrid(
 
 @Composable
 private fun WeekdayHeader() {
+    val locale = LocalLocale.current.platformLocale
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         DayOfWeek.entries.forEach { day ->
             Text(
-                text = day.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
+                text = day.getDisplayName(TextStyle.NARROW, locale),
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.labelMedium,
@@ -164,16 +205,17 @@ private fun CalendarDay(
     val background = when {
         complete -> MaterialTheme.colorScheme.primaryContainer
         day.completedCount > 0 -> MaterialTheme.colorScheme.secondaryContainer
-        else -> MaterialTheme.colorScheme.surface
+        else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
     }
     Surface(
         modifier = Modifier.fillMaxSize(),
-        shape = MaterialTheme.shapes.small,
+        shape = MaterialTheme.shapes.medium,
         color = background,
         border = if (isToday) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
+        tonalElevation = if (complete) 1.dp else 0.dp,
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 6.dp),
+            modifier = Modifier.padding(vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -186,7 +228,11 @@ private fun CalendarDay(
                 text = "${day.completedCount}/${day.targetCount}",
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = if (complete) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                color = when {
+                    complete -> MaterialTheme.colorScheme.primary
+                    day.targetCount == 0 -> MaterialTheme.colorScheme.outline
+                    else -> Color.Unspecified
+                },
             )
         }
     }
