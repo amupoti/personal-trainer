@@ -57,7 +57,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -110,6 +112,7 @@ class MainActivity : ComponentActivity() {
                     onCalendarPrevious = { viewModel.moveCalendar(-1) },
                     onCalendarNext = { viewModel.moveCalendar(1) },
                     onAddActivity = viewModel::addActivity,
+                    onUpdateActivity = viewModel::updateActivity,
                     onDeleteActivity = viewModel::deleteActivity,
                     onToggleTimer = viewModel::toggleTimer,
                     onResetTimer = viewModel::resetTimer,
@@ -183,6 +186,7 @@ private fun DailyMovementApp(
     onCalendarPrevious: () -> Unit,
     onCalendarNext: () -> Unit,
     onAddActivity: (String, Set<DayOfWeek>, Int, TargetUnit, String) -> Unit,
+    onUpdateActivity: (String, String, Set<DayOfWeek>, Int, TargetUnit, String) -> Unit,
     onDeleteActivity: (String) -> Unit,
     onToggleTimer: (String) -> Unit,
     onResetTimer: (String) -> Unit,
@@ -191,16 +195,19 @@ private fun DailyMovementApp(
 ) {
     var selectedView by rememberSaveable { mutableIntStateOf(0) }
     var addingExercise by rememberSaveable { mutableStateOf(false) }
+    var editingExerciseId by rememberSaveable { mutableStateOf<String?>(null) }
+    val editingExercise = state.allActivities.find { it.id == editingExerciseId }
+    val showingExerciseForm = addingExercise || editingExercise != null
     val destinations = listOf(
-        Triple("Today", Icons.Rounded.Home, "Today"),
-        Triple("Calendar", Icons.Rounded.DateRange, "Calendar"),
-        Triple("Exercises", Icons.AutoMirrored.Rounded.List, "Exercises"),
-        Triple("Settings", Icons.Rounded.Settings, "Settings"),
+        Pair(stringResource(R.string.navigation_today), Icons.Rounded.Home),
+        Pair(stringResource(R.string.navigation_calendar), Icons.Rounded.DateRange),
+        Pair(stringResource(R.string.navigation_exercises), Icons.AutoMirrored.Rounded.List),
+        Pair(stringResource(R.string.navigation_settings), Icons.Rounded.Settings),
     )
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
-            if (!addingExercise) {
+            if (!showingExerciseForm) {
                 NavigationBar(
                     containerColor = MaterialTheme.colorScheme.surface,
                     tonalElevation = 2.dp,
@@ -212,7 +219,7 @@ private fun DailyMovementApp(
                             icon = {
                                 Icon(
                                     imageVector = destination.second,
-                                    contentDescription = destination.third,
+                                    contentDescription = destination.first,
                                 )
                             },
                             label = { Text(destination.first) },
@@ -227,22 +234,39 @@ private fun DailyMovementApp(
                 .fillMaxSize()
                 .padding(padding),
         ) {
-            if (addingExercise) {
-                AddExerciseScreen(
-                    onCancel = { addingExercise = false },
-                    onSave = { name, weekdays, targetValue, targetUnit, videoUrl ->
-                        onAddActivity(name, weekdays, targetValue, targetUnit, videoUrl)
+            if (showingExerciseForm) {
+                ExerciseFormScreen(
+                    activity = editingExercise,
+                    initialName = editingExercise?.localizedName().orEmpty(),
+                    onCancel = {
                         addingExercise = false
+                        editingExerciseId = null
+                    },
+                    onSave = { name, weekdays, targetValue, targetUnit, videoUrl ->
+                        if (editingExercise == null) {
+                            onAddActivity(name, weekdays, targetValue, targetUnit, videoUrl)
+                        } else {
+                            onUpdateActivity(
+                                editingExercise.id,
+                                name,
+                                weekdays,
+                                targetValue,
+                                targetUnit,
+                                videoUrl,
+                            )
+                        }
+                        addingExercise = false
+                        editingExerciseId = null
                     },
                 )
             } else {
                 Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
                     Text(
-                        text = "Daily movement",
+                        text = stringResource(R.string.title_daily_movement),
                         style = MaterialTheme.typography.headlineLarge,
                     )
                     Text(
-                        text = "Small steps, every day",
+                        text = stringResource(R.string.subtitle_daily_movement),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.secondary,
                     )
@@ -265,6 +289,7 @@ private fun DailyMovementApp(
                     2 -> ExerciseListScreen(
                         activities = state.allActivities,
                         onAdd = { addingExercise = true },
+                        onEdit = { editingExerciseId = it.id },
                         onDelete = onDeleteActivity,
                     )
 
@@ -286,6 +311,7 @@ fun ProgressScreen(
     onToggleTimer: (String) -> Unit,
     onResetTimer: (String) -> Unit,
 ) {
+    val locale = LocalLocale.current.platformLocale
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -303,16 +329,18 @@ fun ProgressScreen(
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
-                        text = state.date.format(DateTimeFormatter.ofPattern("EEEE, d MMMM")),
+                        text = state.date.format(
+                            DateTimeFormatter.ofPattern("EEEE, d MMMM", locale),
+                        ),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary,
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = if (total == 0) {
-                            "Nothing scheduled today"
+                            stringResource(R.string.nothing_scheduled_today)
                         } else {
-                            "$completed of $total completed"
+                            stringResource(R.string.completed_count, completed, total)
                         },
                         style = MaterialTheme.typography.headlineMedium,
                     )
@@ -355,6 +383,8 @@ private fun ActivityCard(
     onResetTimer: () -> Unit,
 ) {
     val uriHandler = LocalUriHandler.current
+    val displayName = activity.localizedName()
+    val pauseTimerDescription = stringResource(R.string.pause_timer)
     val timerDuration = activity.timerDurationSeconds()
     val activityTimer = timer?.takeIf { it.activityId == activity.id }
     Card(
@@ -393,7 +423,7 @@ private fun ActivityCard(
                         )
                     } else {
                         Text(
-                            text = activity.name.firstOrNull()?.uppercase() ?: "",
+                            text = displayName.firstOrNull()?.uppercase() ?: "",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.secondary,
                         )
@@ -407,7 +437,7 @@ private fun ActivityCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = activity.name,
+                        text = displayName,
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.titleMedium,
                     )
@@ -426,7 +456,7 @@ private fun ActivityCard(
                             IconButton(onClick = onResetTimer) {
                                 Icon(
                                     imageVector = Icons.Rounded.Refresh,
-                                    contentDescription = "Reset timer",
+                                    contentDescription = stringResource(R.string.reset_timer),
                                 )
                             }
                         }
@@ -435,7 +465,7 @@ private fun ActivityCard(
                                 Text(
                                     text = "\u2161",
                                     modifier = Modifier.semantics {
-                                        contentDescription = "Pause timer"
+                                        contentDescription = pauseTimerDescription
                                     },
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
@@ -443,14 +473,14 @@ private fun ActivityCard(
                             } else {
                                 Icon(
                                     imageVector = Icons.Rounded.PlayArrow,
-                                    contentDescription = "Start timer",
+                                    contentDescription = stringResource(R.string.start_timer),
                                 )
                             }
                         }
                     }
                 }
                 Text(
-                    text = activity.description,
+                    text = activity.localizedDescription(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.secondary,
                 )
@@ -459,7 +489,7 @@ private fun ActivityCard(
                         onClick = { uriHandler.openUri(activity.videoUrl) },
                         contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
                     ) {
-                        Text("Open video")
+                        Text(stringResource(R.string.open_video))
                     }
                 }
             }

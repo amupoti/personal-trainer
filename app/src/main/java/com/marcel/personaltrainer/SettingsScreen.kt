@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.marcel.personaltrainer.model.ReminderSettings
 import java.time.LocalTime
@@ -41,7 +42,7 @@ fun SettingsScreen(
     ) {
         item {
             Text(
-                text = "Settings",
+                text = stringResource(R.string.navigation_settings),
                 style = MaterialTheme.typography.titleLarge,
             )
         }
@@ -61,12 +62,12 @@ fun SettingsScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "Daily reminders",
+                                text = stringResource(R.string.daily_reminders),
                                 style = MaterialTheme.typography.titleMedium,
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                text = "Get two notifications with your remaining exercises.",
+                                text = stringResource(R.string.daily_reminders_description),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.secondary,
                             )
@@ -78,13 +79,13 @@ fun SettingsScreen(
                     }
                     Spacer(Modifier.height(20.dp))
                     ReminderTimeRow(
-                        label = "First reminder",
+                        label = stringResource(R.string.first_reminder),
                         time = settings.firstTime,
                         onTimeChange = { onTimeChange(0, it) },
                     )
                     Spacer(Modifier.height(12.dp))
                     ReminderTimeRow(
-                        label = "Second reminder",
+                        label = stringResource(R.string.second_reminder),
                         time = settings.secondTime,
                         onTimeChange = { onTimeChange(1, it) },
                     )

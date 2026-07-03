@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,6 +39,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun CalendarScreen(
@@ -46,6 +48,7 @@ fun CalendarScreen(
     onPrevious: () -> Unit,
     onNext: () -> Unit,
 ) {
+    val locale = LocalLocale.current.platformLocale
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,11 +61,11 @@ fun CalendarScreen(
             IconButton(onClick = onPrevious) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
-                    contentDescription = "Previous period",
+                    contentDescription = stringResource(R.string.previous_period),
                 )
             }
             Text(
-                text = periodTitle(state.calendarAnchorDate, state.calendarPeriod),
+                text = periodTitle(state.calendarAnchorDate, state.calendarPeriod, locale),
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
@@ -71,7 +74,7 @@ fun CalendarScreen(
             IconButton(onClick = onNext) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                    contentDescription = "Next period",
+                    contentDescription = stringResource(R.string.next_period),
                 )
             }
         }
@@ -87,7 +90,14 @@ fun CalendarScreen(
                     selected = state.calendarPeriod == period,
                     onClick = { onPeriodChange(period) },
                     label = {
-                        Text(period.name.lowercase().replaceFirstChar(Char::uppercase))
+                        Text(
+                            stringResource(
+                                when (period) {
+                                    CalendarPeriod.WEEK -> R.string.calendar_period_week
+                                    CalendarPeriod.MONTH -> R.string.calendar_period_month
+                                },
+                            ),
+                        )
                     },
                 )
             }
@@ -110,13 +120,13 @@ fun CalendarScreen(
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
                 Text(
-                    text = "Period progress",
+                    text = stringResource(R.string.period_progress),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "$completed of $targets exercises completed",
+                    text = stringResource(R.string.period_completed_count, completed, targets),
                     style = MaterialTheme.typography.titleMedium,
                 )
                 if (targets > 0) {
@@ -238,13 +248,17 @@ private fun CalendarDay(
     }
 }
 
-private fun periodTitle(date: LocalDate, period: CalendarPeriod): String =
+private fun periodTitle(
+    date: LocalDate,
+    period: CalendarPeriod,
+    locale: Locale,
+): String =
     when (period) {
         CalendarPeriod.WEEK -> {
-            val formatter = DateTimeFormatter.ofPattern("d MMM")
+            val formatter = DateTimeFormatter.ofPattern("d MMM", locale)
             val end = date.minusDays((date.dayOfWeek.value - 1).toLong()).plusDays(6)
             "${date.minusDays((date.dayOfWeek.value - 1).toLong()).format(formatter)} - ${end.format(formatter)}"
         }
 
-        CalendarPeriod.MONTH -> date.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
+        CalendarPeriod.MONTH -> date.format(DateTimeFormatter.ofPattern("MMMM yyyy", locale))
     }

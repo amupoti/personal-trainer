@@ -16,11 +16,27 @@ data class Activity(
     val targetValue: Int,
     val targetUnit: TargetUnit,
     val videoUrl: String = "",
+    val usesLocalizedName: Boolean = false,
 ) {
     val description: String
         get() = "$targetValue ${targetUnit.label}"
 
     fun isScheduledOn(dayOfWeek: DayOfWeek): Boolean = dayOfWeek in weekdays
+
+    fun edited(
+        name: String,
+        weekdays: Set<DayOfWeek>,
+        targetValue: Int,
+        targetUnit: TargetUnit,
+        videoUrl: String,
+    ): Activity = copy(
+        name = name.trim(),
+        weekdays = weekdays,
+        targetValue = targetValue,
+        targetUnit = targetUnit,
+        videoUrl = videoUrl.trim(),
+        usesLocalizedName = false,
+    )
 }
 
 fun isValidVideoUrl(value: String): Boolean {

@@ -108,6 +108,25 @@ class ProgressViewModel(
         refreshActivities()
     }
 
+    fun updateActivity(
+        activityId: String,
+        name: String,
+        weekdays: Set<DayOfWeek>,
+        targetValue: Int,
+        targetUnit: TargetUnit,
+        videoUrl: String,
+    ) {
+        val activity = _uiState.value.allActivities.find { it.id == activityId } ?: return
+        if (_uiState.value.timer?.activityId == activityId) {
+            timerJob?.cancel()
+            _uiState.value = _uiState.value.copy(timer = null)
+        }
+        repository.updateActivity(
+            activity.edited(name, weekdays, targetValue, targetUnit, videoUrl),
+        )
+        refreshActivities()
+    }
+
     fun setRemindersEnabled(enabled: Boolean) {
         updateReminderSettings(_uiState.value.reminderSettings.copy(enabled = enabled))
     }

@@ -77,10 +77,10 @@ private fun createNotificationChannel(context: Context) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
     val channel = NotificationChannel(
         REMINDER_CHANNEL_ID,
-        "Exercise reminders",
+        context.getString(R.string.reminder_channel_name),
         NotificationManager.IMPORTANCE_DEFAULT,
     ).apply {
-        description = "Daily reminders for unfinished exercises"
+        description = context.getString(R.string.reminder_channel_description)
     }
     context.getSystemService(NotificationManager::class.java)
         .createNotificationChannel(channel)
@@ -102,11 +102,16 @@ private fun showExerciseNotification(context: Context, remaining: Int) {
         intent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
-    val label = if (remaining == 1) "exercise" else "exercises"
     val notification = NotificationCompat.Builder(context, REMINDER_CHANNEL_ID)
         .setSmallIcon(R.drawable.app_icon)
-        .setContentTitle("Today's exercises")
-        .setContentText("$remaining $label remaining")
+        .setContentTitle(context.getString(R.string.reminder_notification_title))
+        .setContentText(
+            context.resources.getQuantityString(
+                R.plurals.remaining_exercises,
+                remaining,
+                remaining,
+            ),
+        )
         .setContentIntent(pendingIntent)
         .setAutoCancel(true)
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)

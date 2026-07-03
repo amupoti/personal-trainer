@@ -34,6 +34,14 @@ class ProgressRepository(context: Context) {
         saveActivities(activities() + activity)
     }
 
+    fun updateActivity(activity: Activity) {
+        saveActivities(
+            activities().map { existing ->
+                if (existing.id == activity.id) activity else existing
+            },
+        )
+    }
+
     fun deleteActivity(activityId: String) {
         saveActivities(activities().filterNot { it.id == activityId })
     }
@@ -86,7 +94,8 @@ class ProgressRepository(context: Context) {
                     .put("weekdays", JSONArray(activity.weekdays.map(DayOfWeek::name)))
                     .put("targetValue", activity.targetValue)
                     .put("targetUnit", activity.targetUnit.name)
-                    .put("videoUrl", activity.videoUrl),
+                    .put("videoUrl", activity.videoUrl)
+                    .put("usesLocalizedName", activity.usesLocalizedName),
             )
         }
         preferences.edit().putString(ACTIVITIES_KEY, json.toString()).apply()
@@ -106,6 +115,10 @@ class ProgressRepository(context: Context) {
                 targetValue = item.getInt("targetValue"),
                 targetUnit = TargetUnit.valueOf(item.getString("targetUnit")),
                 videoUrl = item.optString("videoUrl"),
+                usesLocalizedName = item.optBoolean(
+                    "usesLocalizedName",
+                    item.getString("id") in DEFAULT_ACTIVITY_IDS,
+                ),
             )
         }
     }
@@ -116,5 +129,16 @@ class ProgressRepository(context: Context) {
         const val REMINDERS_ENABLED_KEY = "reminders_enabled"
         const val FIRST_REMINDER_TIME_KEY = "first_reminder_time"
         const val SECOND_REMINDER_TIME_KEY = "second_reminder_time"
+        val DEFAULT_ACTIVITY_IDS = setOf(
+            "hamstring_stretch",
+            "glute_bridge",
+            "pelvic_tilt",
+            "cobra",
+            "opposite_leg_pull",
+            "band_arms",
+            "band_knees",
+            "standing_table_leg_curl",
+            "side_plank",
+        )
     }
 }
