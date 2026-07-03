@@ -28,6 +28,21 @@ jobs:
           RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
         run: printenv RELEASE_KEYSTORE_BASE64 | base64 --decode > "$RUNNER_TEMP/release.jks"
 
+      - name: Set release version
+        run: |
+          version_name="${GITHUB_REF_NAME#v}"
+          if [[ ! "$version_name" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "Tag must use the format vMAJOR.MINOR.PATCH" >&2
+            exit 1
+          fi
+          version_code=$((
+            10#${BASH_REMATCH[1]} * 1000000 +
+            10#${BASH_REMATCH[2]} * 1000 +
+            10#${BASH_REMATCH[3]}
+          ))
+          echo "RELEASE_VERSION_NAME=$version_name" >> "$GITHUB_ENV"
+          echo "RELEASE_VERSION_CODE=$version_code" >> "$GITHUB_ENV"
+
       - name: Test and build signed APK
         env:
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}

@@ -11,3 +11,4 @@ captures/
 app/build/
 *.jks
 *.keystore
+release-signing.properties

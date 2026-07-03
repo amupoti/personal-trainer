@@ -69,7 +69,8 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-Download the APK from the repository's Releases page. On a Samsung phone, open
-the downloaded APK, allow **Install unknown apps** for the browser or file
-manager when prompted, and select **Install**. Future versions signed with the
-same key can be installed over the existing app without losing its data.
+The app checks this repository's latest release from **Settings**. When a newer
+version is available, select **Download and install**, allow **Install unknown
+apps** for Daily Movement when prompted, and confirm the Android installation.
+Future versions signed with the same key can be installed over the existing app
+without losing its data.
