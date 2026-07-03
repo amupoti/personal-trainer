@@ -59,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -355,6 +356,59 @@ fun ProgressScreen(
                             trackColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.55f),
                         )
                     }
+                }
+            }
+        }
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            ) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Text(
+                        text = stringResource(R.string.daily_streak),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = pluralStringResource(
+                            R.plurals.streak_days,
+                            state.streak.current,
+                            state.streak.current,
+                        ),
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(
+                            when {
+                                !state.streak.isTodayScheduled -> R.string.streak_rest_day
+                                state.streak.isTodayComplete -> R.string.streak_extended_today
+                                state.streak.current > 0 -> R.string.complete_today_keep_streak
+                                else -> R.string.complete_today_start_streak
+                            },
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(
+                            R.string.longest_streak,
+                            pluralStringResource(
+                                R.plurals.streak_days,
+                                state.streak.longest,
+                                state.streak.longest,
+                            ),
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
                 }
             }
         }

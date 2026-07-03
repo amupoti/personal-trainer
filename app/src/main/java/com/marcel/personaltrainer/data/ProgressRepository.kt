@@ -49,6 +49,13 @@ class ProgressRepository(context: Context) {
     fun completedActivityIds(date: LocalDate): Set<String> =
         preferences.getStringSet(date.toString(), emptySet()).orEmpty().toSet()
 
+    fun completionHistory(): Map<LocalDate, Set<String>> =
+        preferences.all.keys.mapNotNull { key ->
+            val date = runCatching { LocalDate.parse(key) }.getOrNull()
+                ?: return@mapNotNull null
+            date to completedActivityIds(date)
+        }.toMap()
+
     fun setCompleted(date: LocalDate, activityId: String, completed: Boolean) {
         val updated = completedActivityIds(date).toMutableSet()
         if (completed) {

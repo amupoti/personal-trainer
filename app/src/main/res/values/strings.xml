@@ -8,6 +8,12 @@
     <string name="subtitle_daily_movement">Small steps, every day</string>
     <string name="nothing_scheduled_today">Nothing scheduled today</string>
     <string name="completed_count">%1$d of %2$d completed</string>
+    <string name="daily_streak">Daily streak</string>
+    <string name="complete_today_keep_streak">Complete today to keep it</string>
+    <string name="complete_today_start_streak">Complete today to start a streak</string>
+    <string name="streak_extended_today">Today counts toward your streak</string>
+    <string name="streak_rest_day">Rest day — your streak is safe</string>
+    <string name="longest_streak">Longest: %1$s</string>
     <string name="reset_timer">Reset timer</string>
     <string name="pause_timer">Pause timer</string>
     <string name="start_timer">Start timer</string>
@@ -77,6 +83,10 @@
     <plurals name="remaining_exercises">
         <item quantity="one">%d exercise remaining</item>
         <item quantity="other">%d exercises remaining</item>
+    </plurals>
+    <plurals name="streak_days">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
     </plurals>
     <plurals name="target_repetitions">
         <item quantity="one">%d repetition</item>

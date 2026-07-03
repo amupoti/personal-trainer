@@ -8,6 +8,12 @@
     <string name="subtitle_daily_movement">Petites passes, cada dia</string>
     <string name="nothing_scheduled_today">Avui no hi ha res programat</string>
     <string name="completed_count">%1$d de %2$d completats</string>
+    <string name="daily_streak">Ratxa diària</string>
+    <string name="complete_today_keep_streak">Completa el dia d\'avui per mantenir-la</string>
+    <string name="complete_today_start_streak">Completa el dia d\'avui per començar una ratxa</string>
+    <string name="streak_extended_today">Avui compta per a la teva ratxa</string>
+    <string name="streak_rest_day">Dia de descans — la ratxa està protegida</string>
+    <string name="longest_streak">Màxima: %1$s</string>
     <string name="reset_timer">Reinicia el temporitzador</string>
     <string name="pause_timer">Pausa el temporitzador</string>
     <string name="start_timer">Inicia el temporitzador</string>
@@ -76,6 +82,10 @@
     <plurals name="remaining_exercises">
         <item quantity="one">Queda %d exercici</item>
         <item quantity="other">Queden %d exercicis</item>
+    </plurals>
+    <plurals name="streak_days">
+        <item quantity="one">%d dia</item>
+        <item quantity="other">%d dies</item>
     </plurals>
     <plurals name="target_repetitions">
         <item quantity="one">%d repetició</item>

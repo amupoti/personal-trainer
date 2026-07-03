@@ -7,7 +7,9 @@ import com.marcel.personaltrainer.data.ProgressRepository
 import com.marcel.personaltrainer.model.Activity
 import com.marcel.personaltrainer.model.CalendarPeriod
 import com.marcel.personaltrainer.model.ReminderSettings
+import com.marcel.personaltrainer.model.StreakStats
 import com.marcel.personaltrainer.model.TargetUnit
+import com.marcel.personaltrainer.model.calculateStreak
 import com.marcel.personaltrainer.model.datesForPeriod
 import com.marcel.personaltrainer.model.timerDurationSeconds
 import java.time.DayOfWeek
@@ -50,6 +52,7 @@ data class ProgressUiState(
     val calendarPeriod: CalendarPeriod = CalendarPeriod.WEEK,
     val calendarAnchorDate: LocalDate = date,
     val calendarDays: List<DayProgress> = emptyList(),
+    val streak: StreakStats = StreakStats(),
     val timer: ActivityTimer? = null,
     val reminderSettings: ReminderSettings = ReminderSettings(),
 )
@@ -213,6 +216,7 @@ class ProgressViewModel(
             completedIds = completedIds.intersect(scheduled.map(Activity::id).toSet()),
             calendarAnchorDate = date,
             calendarDays = calendarProgress(date, CalendarPeriod.WEEK),
+            streak = calculateStreak(activities, repository.completionHistory(), date),
             reminderSettings = repository.reminderSettings(),
         )
     }
@@ -227,6 +231,7 @@ class ProgressViewModel(
             completedIds = repository.completedActivityIds(date)
                 .intersect(scheduled.map(Activity::id).toSet()),
             calendarDays = calendarProgress(current.calendarAnchorDate, current.calendarPeriod),
+            streak = calculateStreak(activities, repository.completionHistory(), date),
         )
     }
 
