@@ -68,6 +68,7 @@
     <string name="calendar_period_month">Month</string>
     <string name="period_progress">Period progress</string>
     <string name="period_completed_count">%1$d of %2$d exercises completed</string>
+    <string name="no_completed_exercises_on_day">No exercises completed on this day</string>
     <string name="daily_reminders">Daily reminders</string>
     <string name="daily_reminders_description">Get two notifications with your remaining exercises.</string>
     <string name="first_reminder">First reminder</string>

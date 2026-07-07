@@ -1,6 +1,7 @@
 package com.marcel.personaltrainer
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,6 +54,8 @@ fun CalendarScreen(
     onNext: () -> Unit,
 ) {
     val locale = LocalLocale.current.platformLocale
+    var selectedDate by rememberSaveable { mutableStateOf(state.date.toString()) }
+    val selectedDay = state.calendarDays.find { it.date.toString() == selectedDate }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -107,8 +114,14 @@ fun CalendarScreen(
             days = state.calendarDays,
             period = state.calendarPeriod,
             today = state.date,
+            selectedDate = selectedDay?.date,
+            onDateSelected = { selectedDate = it.toString() },
         )
         Spacer(Modifier.height(20.dp))
+        selectedDay?.let { day ->
+            SelectedDayCard(day = day, locale = locale)
+            Spacer(Modifier.height(20.dp))
+        }
         val completed = state.calendarDays.sumOf(DayProgress::completedCount)
         val targets = state.calendarDays.sumOf(DayProgress::targetCount)
         Card(
@@ -149,6 +162,8 @@ private fun CalendarGrid(
     days: List<DayProgress>,
     period: CalendarPeriod,
     today: LocalDate,
+    selectedDate: LocalDate?,
+    onDateSelected: (LocalDate) -> Unit,
 ) {
     WeekdayHeader()
     Spacer(Modifier.height(8.dp))
@@ -178,7 +193,12 @@ private fun CalendarGrid(
                             .aspectRatio(if (period == CalendarPeriod.WEEK) 0.72f else 0.82f),
                     ) {
                         if (day != null) {
-                            CalendarDay(day = day, isToday = day.date == today)
+                            CalendarDay(
+                                day = day,
+                                isToday = day.date == today,
+                                selected = day.date == selectedDate,
+                                onClick = { onDateSelected(day.date) },
+                            )
                         }
                     }
                 }
@@ -210,6 +230,8 @@ private fun WeekdayHeader() {
 private fun CalendarDay(
     day: DayProgress,
     isToday: Boolean,
+    selected: Boolean,
+    onClick: () -> Unit,
 ) {
     val complete = day.targetCount > 0 && day.completedCount == day.targetCount
     val background = when {
@@ -218,10 +240,16 @@ private fun CalendarDay(
         else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
     }
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(onClick = onClick),
         shape = MaterialTheme.shapes.medium,
         color = background,
-        border = if (isToday) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
+        border = when {
+            selected -> BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+            isToday -> BorderStroke(2.dp, MaterialTheme.colorScheme.secondary)
+            else -> null
+        },
         tonalElevation = if (complete) 1.dp else 0.dp,
     ) {
         Column(
@@ -244,6 +272,53 @@ private fun CalendarDay(
                     else -> Color.Unspecified
                 },
             )
+        }
+    }
+}
+
+@Composable
+private fun SelectedDayCard(
+    day: DayProgress,
+    locale: Locale,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    ) {
+        Column(modifier = Modifier.padding(18.dp)) {
+            Text(
+                text = day.date.format(DateTimeFormatter.ofPattern("EEEE, d MMMM", locale)),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(Modifier.height(8.dp))
+            if (day.completedActivities.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.no_completed_exercises_on_day),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+            } else {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    day.completedActivities.forEach { activity ->
+                        Column {
+                            Text(
+                                text = activity.localizedName(),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Text(
+                                text = activity.localizedDescription(),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.secondary,
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

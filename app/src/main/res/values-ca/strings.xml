@@ -67,6 +67,7 @@
     <string name="calendar_period_month">Mes</string>
     <string name="period_progress">Progrés del període</string>
     <string name="period_completed_count">%1$d de %2$d exercicis completats</string>
+    <string name="no_completed_exercises_on_day">No s\'ha completat cap exercici aquest dia</string>
     <string name="daily_reminders">Recordatoris diaris</string>
     <string name="daily_reminders_description">Rep dues notificacions amb els exercicis pendents.</string>
     <string name="first_reminder">Primer recordatori</string>
