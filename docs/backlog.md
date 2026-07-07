@@ -7,7 +7,7 @@
 - [ ] Add milestone badges for 7, 30, and 100 completed days.
 - [ ] Add perfect-day and perfect-week achievements.
 - [ ] Add a small completion celebration when all daily exercises are done.
-- [ ] Add light, dark, and system theme options.
+- [x] Add light, dark, and system theme options.
 
 ## Issues
 

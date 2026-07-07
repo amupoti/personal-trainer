@@ -18,6 +18,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.marcel.personaltrainer.model.ReminderSettings
+import com.marcel.personaltrainer.model.ThemePreference
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.launch
@@ -39,8 +43,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsScreen(
     settings: ReminderSettings,
+    themePreference: ThemePreference,
     onEnabledChange: (Boolean) -> Unit,
     onTimeChange: (Int, LocalTime) -> Unit,
+    onThemePreferenceChange: (ThemePreference) -> Unit,
 ) {
     val context = LocalContext.current
     val updateInstaller = remember(context) {
@@ -70,6 +76,55 @@ fun SettingsScreen(
                 text = stringResource(R.string.navigation_settings),
                 style = MaterialTheme.typography.titleLarge,
             )
+        }
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            ) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Text(
+                        text = stringResource(R.string.appearance),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.theme_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    SingleChoiceSegmentedButtonRow(
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        ThemePreference.entries.forEachIndexed { index, preference ->
+                            SegmentedButton(
+                                selected = themePreference == preference,
+                                onClick = { onThemePreferenceChange(preference) },
+                                shape = SegmentedButtonDefaults.itemShape(
+                                    index = index,
+                                    count = ThemePreference.entries.size,
+                                ),
+                                label = {
+                                    Text(
+                                        stringResource(
+                                            when (preference) {
+                                                ThemePreference.LIGHT -> R.string.theme_light
+                                                ThemePreference.DARK -> R.string.theme_dark
+                                                ThemePreference.SYSTEM -> R.string.theme_system
+                                            },
+                                        ),
+                                    )
+                                },
+                            )
+                        }
+                    }
+                }
+            }
         }
         item {
             Card(

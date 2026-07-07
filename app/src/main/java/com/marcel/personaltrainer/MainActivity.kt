@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -48,7 +49,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +60,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.pluralStringResource
@@ -73,6 +79,7 @@ import com.marcel.personaltrainer.data.ProgressRepository
 import com.marcel.personaltrainer.model.Activity
 import com.marcel.personaltrainer.model.CalendarPeriod
 import com.marcel.personaltrainer.model.TargetUnit
+import com.marcel.personaltrainer.model.ThemePreference
 import com.marcel.personaltrainer.model.formatTimer
 import com.marcel.personaltrainer.model.timerDurationSeconds
 import com.marcel.personaltrainer.ui.ActivityTimer
@@ -96,9 +103,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val state by viewModel.uiState.collectAsStateWithLifecycle()
             TimerSoundEffects(viewModel.timerSounds)
-            DailyMovementTheme {
-                val state by viewModel.uiState.collectAsStateWithLifecycle()
+            DailyMovementTheme(themePreference = state.themePreference) {
                 val notificationPermissionLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.RequestPermission(),
                 ) { granted ->
@@ -134,6 +141,7 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     onReminderTimeChange = viewModel::setReminderTime,
+                    onThemePreferenceChange = viewModel::setThemePreference,
                 )
             }
         }
@@ -141,9 +149,31 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun DailyMovementTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = lightColorScheme(
+private fun DailyMovementTheme(
+    themePreference: ThemePreference,
+    content: @Composable () -> Unit,
+) {
+    val darkTheme = when (themePreference) {
+        ThemePreference.LIGHT -> false
+        ThemePreference.DARK -> true
+        ThemePreference.SYSTEM -> isSystemInDarkTheme()
+    }
+    val colorScheme = if (darkTheme) {
+        darkColorScheme(
+            primary = Color(0xFF81D5C7),
+            onPrimary = Color(0xFF003730),
+            primaryContainer = Color(0xFF005047),
+            onPrimaryContainer = Color(0xFF9EF2E2),
+            secondary = Color(0xFFB1CCC5),
+            secondaryContainer = Color(0xFF334B46),
+            onSecondaryContainer = Color(0xFFCDE8E1),
+            background = Color(0xFF0E1513),
+            surface = Color(0xFF0E1513),
+            surfaceVariant = Color(0xFF3F4946),
+            outline = Color(0xFF89938F),
+        )
+    } else {
+        lightColorScheme(
             primary = Color(0xFF006B5F),
             onPrimary = Color.White,
             primaryContainer = Color(0xFF9EF2E2),
@@ -155,7 +185,26 @@ private fun DailyMovementTheme(content: @Composable () -> Unit) {
             surface = Color(0xFFF5FBF8),
             surfaceVariant = Color(0xFFDAE5E1),
             outline = Color(0xFF6F7976),
-        ),
+        )
+    }
+    val systemBarColor = Color.Transparent.toArgb()
+    val activity = LocalContext.current as? ComponentActivity
+    SideEffect {
+        activity?.enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(
+                lightScrim = systemBarColor,
+                darkScrim = systemBarColor,
+                detectDarkMode = { darkTheme },
+            ),
+            navigationBarStyle = SystemBarStyle.auto(
+                lightScrim = systemBarColor,
+                darkScrim = systemBarColor,
+                detectDarkMode = { darkTheme },
+            ),
+        )
+    }
+    MaterialTheme(
+        colorScheme = colorScheme,
         typography = Typography(
             headlineLarge = Typography().headlineLarge.copy(
                 fontWeight = FontWeight.Bold,
@@ -193,6 +242,7 @@ private fun DailyMovementApp(
     onResetTimer: (String) -> Unit,
     onRemindersEnabledChange: (Boolean) -> Unit,
     onReminderTimeChange: (Int, LocalTime) -> Unit,
+    onThemePreferenceChange: (ThemePreference) -> Unit,
 ) {
     var selectedView by rememberSaveable { mutableIntStateOf(0) }
     var addingExercise by rememberSaveable { mutableStateOf(false) }
@@ -296,8 +346,10 @@ private fun DailyMovementApp(
 
                     else -> SettingsScreen(
                         settings = state.reminderSettings,
+                        themePreference = state.themePreference,
                         onEnabledChange = onRemindersEnabledChange,
                         onTimeChange = onReminderTimeChange,
+                        onThemePreferenceChange = onThemePreferenceChange,
                     )
                 }
             }
@@ -321,8 +373,8 @@ fun ProgressScreen(
         contentPadding = PaddingValues(bottom = 20.dp),
     ) {
         item {
-            val completed = state.completedIds.size
-            val total = state.activities.size
+            val completed = state.weeklyCompletedCount
+            val total = state.weeklyTargetCount
             Surface(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -339,9 +391,9 @@ fun ProgressScreen(
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = if (total == 0) {
-                            stringResource(R.string.nothing_scheduled_today)
+                            stringResource(R.string.no_exercises)
                         } else {
-                            stringResource(R.string.completed_count, completed, total)
+                            stringResource(R.string.weekly_completed_count, completed, total)
                         },
                         style = MaterialTheme.typography.headlineMedium,
                     )
@@ -412,7 +464,39 @@ fun ProgressScreen(
                 }
             }
         }
-        items(state.activities, key = Activity::id) { activity ->
+        val suggestedIds = state.suggestedActivities.map(Activity::id).toSet()
+        val otherActivities = state.activities.filterNot { it.id in suggestedIds }
+        if (state.suggestedActivities.isNotEmpty()) {
+            item {
+                Text(
+                    text = stringResource(R.string.suggested_today),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+            }
+        }
+        items(state.suggestedActivities, key = Activity::id) { activity ->
+            ActivityCard(
+                activity = activity,
+                completed = activity.id in state.completedIds,
+                timer = state.timer,
+                onCompletedChange = { completed ->
+                    onCompletedChange(activity.id, completed)
+                },
+                onToggleTimer = { onToggleTimer(activity.id) },
+                onResetTimer = { onResetTimer(activity.id) },
+            )
+        }
+        if (otherActivities.isNotEmpty()) {
+            item {
+                Text(
+                    text = stringResource(R.string.other_exercises),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+            }
+        }
+        items(otherActivities, key = Activity::id) { activity ->
             ActivityCard(
                 activity = activity,
                 completed = activity.id in state.completedIds,
@@ -567,7 +651,7 @@ private fun ProgressScreenPreview() {
             targetUnit = TargetUnit.SECONDS,
         ),
     )
-    DailyMovementTheme {
+    DailyMovementTheme(themePreference = ThemePreference.LIGHT) {
         ProgressScreen(
             state = ProgressUiState(
                 date = LocalDate.of(2026, 6, 27),

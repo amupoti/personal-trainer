@@ -4,6 +4,7 @@ import android.content.Context
 import com.marcel.personaltrainer.model.Activity
 import com.marcel.personaltrainer.model.ReminderSettings
 import com.marcel.personaltrainer.model.TargetUnit
+import com.marcel.personaltrainer.model.ThemePreference
 import com.marcel.personaltrainer.model.remainingActivityCount
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -80,6 +81,13 @@ class ProgressRepository(context: Context) {
             .apply()
     }
 
+    fun themePreference(): ThemePreference =
+        ThemePreference.fromStoredValue(preferences.getString(THEME_PREFERENCE_KEY, null))
+
+    fun saveThemePreference(themePreference: ThemePreference) {
+        preferences.edit().putString(THEME_PREFERENCE_KEY, themePreference.name).apply()
+    }
+
     fun remainingActivityCount(date: LocalDate): Int = remainingActivityCount(
         activities = activities(),
         completedIds = completedActivityIds(date),
@@ -136,6 +144,7 @@ class ProgressRepository(context: Context) {
         const val REMINDERS_ENABLED_KEY = "reminders_enabled"
         const val FIRST_REMINDER_TIME_KEY = "first_reminder_time"
         const val SECOND_REMINDER_TIME_KEY = "second_reminder_time"
+        const val THEME_PREFERENCE_KEY = "theme_preference"
         val DEFAULT_ACTIVITY_IDS = setOf(
             "hamstring_stretch",
             "glute_bridge",

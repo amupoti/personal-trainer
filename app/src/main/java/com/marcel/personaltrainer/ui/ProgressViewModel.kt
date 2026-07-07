@@ -9,6 +9,8 @@ import com.marcel.personaltrainer.model.CalendarPeriod
 import com.marcel.personaltrainer.model.ReminderSettings
 import com.marcel.personaltrainer.model.StreakStats
 import com.marcel.personaltrainer.model.TargetUnit
+import com.marcel.personaltrainer.model.ThemePreference
+import com.marcel.personaltrainer.model.calculateWeeklyProgress
 import com.marcel.personaltrainer.model.calculateStreak
 import com.marcel.personaltrainer.model.datesForPeriod
 import com.marcel.personaltrainer.model.timerDurationSeconds
@@ -47,14 +49,18 @@ enum class TimerSound {
 data class ProgressUiState(
     val date: LocalDate = LocalDate.now(),
     val activities: List<Activity> = emptyList(),
+    val suggestedActivities: List<Activity> = emptyList(),
     val allActivities: List<Activity> = emptyList(),
     val completedIds: Set<String> = emptySet(),
+    val weeklyCompletedCount: Int = 0,
+    val weeklyTargetCount: Int = 0,
     val calendarPeriod: CalendarPeriod = CalendarPeriod.WEEK,
     val calendarAnchorDate: LocalDate = date,
     val calendarDays: List<DayProgress> = emptyList(),
     val streak: StreakStats = StreakStats(),
     val timer: ActivityTimer? = null,
     val reminderSettings: ReminderSettings = ReminderSettings(),
+    val themePreference: ThemePreference = ThemePreference.SYSTEM,
 )
 
 class ProgressViewModel(
@@ -145,6 +151,11 @@ class ProgressViewModel(
         )
     }
 
+    fun setThemePreference(themePreference: ThemePreference) {
+        repository.saveThemePreference(themePreference)
+        _uiState.value = _uiState.value.copy(themePreference = themePreference)
+    }
+
     fun toggleTimer(activityId: String) {
         val activity = _uiState.value.activities.find { it.id == activityId } ?: return
         val totalSeconds = activity.timerDurationSeconds() ?: return
@@ -209,15 +220,24 @@ class ProgressViewModel(
     ): ProgressUiState {
         val activities = repository.activities()
         val scheduled = activities.filter { it.isScheduledOn(date.dayOfWeek) }
+        val weeklyProgress = calculateWeeklyProgress(
+            activities,
+            repository.completionHistory(),
+            date,
+        )
         return ProgressUiState(
             date = date,
-            activities = scheduled,
+            activities = activities,
+            suggestedActivities = scheduled,
             allActivities = activities,
-            completedIds = completedIds.intersect(scheduled.map(Activity::id).toSet()),
+            completedIds = completedIds.intersect(activities.map(Activity::id).toSet()),
+            weeklyCompletedCount = weeklyProgress.completedCount,
+            weeklyTargetCount = weeklyProgress.targetCount,
             calendarAnchorDate = date,
             calendarDays = calendarProgress(date, CalendarPeriod.WEEK),
             streak = calculateStreak(activities, repository.completionHistory(), date),
             reminderSettings = repository.reminderSettings(),
+            themePreference = repository.themePreference(),
         )
     }
 
@@ -225,11 +245,19 @@ class ProgressViewModel(
         val current = _uiState.value
         val activities = repository.activities()
         val scheduled = activities.filter { it.isScheduledOn(date.dayOfWeek) }
+        val weeklyProgress = calculateWeeklyProgress(
+            activities,
+            repository.completionHistory(),
+            date,
+        )
         _uiState.value = current.copy(
-            activities = scheduled,
+            activities = activities,
+            suggestedActivities = scheduled,
             allActivities = activities,
             completedIds = repository.completedActivityIds(date)
-                .intersect(scheduled.map(Activity::id).toSet()),
+                .intersect(activities.map(Activity::id).toSet()),
+            weeklyCompletedCount = weeklyProgress.completedCount,
+            weeklyTargetCount = weeklyProgress.targetCount,
             calendarDays = calendarProgress(current.calendarAnchorDate, current.calendarPeriod),
             streak = calculateStreak(activities, repository.completionHistory(), date),
         )
