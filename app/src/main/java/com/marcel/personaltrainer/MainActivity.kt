@@ -337,8 +337,10 @@ private fun DailyMovementApp(
                         onNext = onCalendarNext,
                     )
 
-                    2 -> ExerciseListScreen(
+                    2 -> ExerciseScreen(
                         activities = state.allActivities,
+                        weeklyStats = state.weeklyExerciseStats,
+                        monthlyStats = state.monthlyExerciseStats,
                         onAdd = { addingExercise = true },
                         onEdit = { editingExerciseId = it.id },
                         onDelete = onDeleteActivity,

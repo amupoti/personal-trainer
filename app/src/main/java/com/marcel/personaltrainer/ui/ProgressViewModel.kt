@@ -6,10 +6,12 @@ import com.marcel.personaltrainer.ExerciseReminderScheduler
 import com.marcel.personaltrainer.data.ProgressRepository
 import com.marcel.personaltrainer.model.Activity
 import com.marcel.personaltrainer.model.CalendarPeriod
+import com.marcel.personaltrainer.model.ExerciseStat
 import com.marcel.personaltrainer.model.ReminderSettings
 import com.marcel.personaltrainer.model.StreakStats
 import com.marcel.personaltrainer.model.TargetUnit
 import com.marcel.personaltrainer.model.ThemePreference
+import com.marcel.personaltrainer.model.calculateExerciseStats
 import com.marcel.personaltrainer.model.calculateWeeklyProgress
 import com.marcel.personaltrainer.model.calculateStreak
 import com.marcel.personaltrainer.model.datesForPeriod
@@ -75,6 +77,8 @@ data class ProgressUiState(
     val calendarAnchorDate: LocalDate = date,
     val calendarDays: List<DayProgress> = emptyList(),
     val streak: StreakStats = StreakStats(),
+    val weeklyExerciseStats: List<ExerciseStat> = emptyList(),
+    val monthlyExerciseStats: List<ExerciseStat> = emptyList(),
     val timer: ActivityTimer? = null,
     val reminderSettings: ReminderSettings = ReminderSettings(),
     val themePreference: ThemePreference = ThemePreference.SYSTEM,
@@ -237,9 +241,10 @@ class ProgressViewModel(
     ): ProgressUiState {
         val activities = repository.activities()
         val scheduled = activities.filter { it.isScheduledOn(date.dayOfWeek) }
+        val history = repository.completionHistory()
         val weeklyProgress = calculateWeeklyProgress(
             activities,
-            repository.completionHistory(),
+            history,
             date,
         )
         return ProgressUiState(
@@ -252,7 +257,17 @@ class ProgressViewModel(
             weeklyTargetCount = weeklyProgress.targetCount,
             calendarAnchorDate = date,
             calendarDays = calendarProgress(date, CalendarPeriod.WEEK),
-            streak = calculateStreak(activities, repository.completionHistory(), date),
+            streak = calculateStreak(activities, history, date),
+            weeklyExerciseStats = calculateExerciseStats(
+                activities = activities,
+                completionHistory = history,
+                dates = datesForPeriod(date, CalendarPeriod.WEEK),
+            ),
+            monthlyExerciseStats = calculateExerciseStats(
+                activities = activities,
+                completionHistory = history,
+                dates = datesForPeriod(date, CalendarPeriod.MONTH),
+            ),
             reminderSettings = repository.reminderSettings(),
             themePreference = repository.themePreference(),
         )
@@ -262,9 +277,10 @@ class ProgressViewModel(
         val current = _uiState.value
         val activities = repository.activities()
         val scheduled = activities.filter { it.isScheduledOn(date.dayOfWeek) }
+        val history = repository.completionHistory()
         val weeklyProgress = calculateWeeklyProgress(
             activities,
-            repository.completionHistory(),
+            history,
             date,
         )
         _uiState.value = current.copy(
@@ -276,7 +292,17 @@ class ProgressViewModel(
             weeklyCompletedCount = weeklyProgress.completedCount,
             weeklyTargetCount = weeklyProgress.targetCount,
             calendarDays = calendarProgress(current.calendarAnchorDate, current.calendarPeriod),
-            streak = calculateStreak(activities, repository.completionHistory(), date),
+            streak = calculateStreak(activities, history, date),
+            weeklyExerciseStats = calculateExerciseStats(
+                activities = activities,
+                completionHistory = history,
+                dates = datesForPeriod(date, CalendarPeriod.WEEK),
+            ),
+            monthlyExerciseStats = calculateExerciseStats(
+                activities = activities,
+                completionHistory = history,
+                dates = datesForPeriod(date, CalendarPeriod.MONTH),
+            ),
         )
     }
 

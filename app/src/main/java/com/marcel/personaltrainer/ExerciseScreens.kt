@@ -26,9 +26,12 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,10 +49,158 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.marcel.personaltrainer.model.Activity
+import com.marcel.personaltrainer.model.ExerciseStat
 import com.marcel.personaltrainer.model.TargetUnit
 import com.marcel.personaltrainer.model.isValidVideoUrl
 import java.time.DayOfWeek
 import java.time.format.TextStyle
+import kotlin.math.roundToInt
+
+@Composable
+fun ExerciseScreen(
+    activities: List<Activity>,
+    weeklyStats: List<ExerciseStat>,
+    monthlyStats: List<ExerciseStat>,
+    onAdd: () -> Unit,
+    onEdit: (Activity) -> Unit,
+    onDelete: (String) -> Unit,
+) {
+    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+    Column(modifier = Modifier.fillMaxSize()) {
+        PrimaryTabRow(selectedTabIndex = selectedTab) {
+            listOf(
+                stringResource(R.string.exercise_tab_stats),
+                stringResource(R.string.exercise_tab_manage),
+            ).forEachIndexed { index, title ->
+                Tab(
+                    selected = selectedTab == index,
+                    onClick = { selectedTab = index },
+                    text = { Text(title) },
+                )
+            }
+        }
+        if (selectedTab == 0) {
+            ExerciseStatsScreen(
+                weeklyStats = weeklyStats,
+                monthlyStats = monthlyStats,
+            )
+        } else {
+            ExerciseListScreen(
+                activities = activities,
+                onAdd = onAdd,
+                onEdit = onEdit,
+                onDelete = onDelete,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ExerciseStatsScreen(
+    weeklyStats: List<ExerciseStat>,
+    monthlyStats: List<ExerciseStat>,
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+        contentPadding = PaddingValues(bottom = 20.dp, top = 14.dp),
+    ) {
+        item {
+            Text(
+                text = stringResource(R.string.exercise_stats),
+                style = MaterialTheme.typography.titleLarge,
+            )
+        }
+        item {
+            ExerciseStatsSection(
+                title = stringResource(R.string.exercise_stats_this_week),
+                stats = weeklyStats,
+            )
+        }
+        item {
+            ExerciseStatsSection(
+                title = stringResource(R.string.exercise_stats_this_month),
+                stats = monthlyStats,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ExerciseStatsSection(
+    title: String,
+    stats: List<ExerciseStat>,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    ) {
+        Column(
+            modifier = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+            )
+            if (stats.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.exercise_stats_empty),
+                    color = MaterialTheme.colorScheme.secondary,
+                )
+            } else {
+                stats.forEach { stat ->
+                    ExerciseStatRow(stat)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExerciseStatRow(stat: ExerciseStat) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stat.activity.localizedName(),
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = stringResource(
+                    R.string.exercise_stat_percentage,
+                    stat.percentage.roundToInt(),
+                ),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+        }
+        LinearProgressIndicator(
+            progress = { stat.percentage / 100f },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp),
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
+        Text(
+            text = pluralStringResource(
+                R.plurals.exercise_stat_completions,
+                stat.completedCount,
+                stat.completedCount,
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+    }
+}
 
 @Composable
 fun ExerciseListScreen(

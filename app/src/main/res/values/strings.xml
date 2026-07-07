@@ -28,6 +28,13 @@
     <string name="start_timer">Start timer</string>
     <string name="open_video">Open video</string>
     <string name="my_exercises">My exercises</string>
+    <string name="exercise_tab_stats">Stats</string>
+    <string name="exercise_tab_manage">Manage</string>
+    <string name="exercise_stats">Exercise stats</string>
+    <string name="exercise_stats_this_week">This week</string>
+    <string name="exercise_stats_this_month">This month</string>
+    <string name="exercise_stats_empty">No completed exercises in this period</string>
+    <string name="exercise_stat_percentage">%1$d%%</string>
     <string name="add_exercise">Add exercise</string>
     <string name="build_your_routine">Build your routine</string>
     <string name="add_exercise_empty_message">Add an exercise to start tracking your movement.</string>
@@ -97,6 +104,10 @@
     <plurals name="streak_days">
         <item quantity="one">%d day</item>
         <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="exercise_stat_completions">
+        <item quantity="one">%d completion</item>
+        <item quantity="other">%d completions</item>
     </plurals>
     <plurals name="target_repetitions">
         <item quantity="one">%d repetition</item>

@@ -28,6 +28,13 @@
     <string name="start_timer">Inicia el temporitzador</string>
     <string name="open_video">Obre el vídeo</string>
     <string name="my_exercises">Els meus exercicis</string>
+    <string name="exercise_tab_stats">Estadístiques</string>
+    <string name="exercise_tab_manage">Gestiona</string>
+    <string name="exercise_stats">Estadístiques d\'exercicis</string>
+    <string name="exercise_stats_this_week">Aquesta setmana</string>
+    <string name="exercise_stats_this_month">Aquest mes</string>
+    <string name="exercise_stats_empty">No hi ha exercicis completats en aquest període</string>
+    <string name="exercise_stat_percentage">%1$d%%</string>
     <string name="add_exercise">Afegeix un exercici</string>
     <string name="build_your_routine">Crea la teva rutina</string>
     <string name="add_exercise_empty_message">Afegeix un exercici per començar a registrar el teu moviment.</string>
@@ -96,6 +103,10 @@
     <plurals name="streak_days">
         <item quantity="one">%d dia</item>
         <item quantity="other">%d dies</item>
+    </plurals>
+    <plurals name="exercise_stat_completions">
+        <item quantity="one">%d compleció</item>
+        <item quantity="other">%d complecions</item>
     </plurals>
     <plurals name="target_repetitions">
         <item quantity="one">%d repetició</item>
