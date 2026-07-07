@@ -83,6 +83,9 @@
     <string name="reminder_channel_name">Exercise reminders</string>
     <string name="reminder_channel_description">Daily reminders for unfinished exercises</string>
     <string name="reminder_notification_title">Today\'s exercises</string>
+    <string name="reminder_general_message">Time for some movement today</string>
+    <string name="reminder_remaining_message">%1$d left: %2$s</string>
+    <string name="reminder_remaining_more_message">%1$d left: %2$s +%3$d more</string>
     <string name="app_updates">App updates</string>
     <string name="current_version">Current version: %1$s</string>
     <string name="check_for_updates">Check for updates</string>

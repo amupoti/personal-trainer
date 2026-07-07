@@ -82,6 +82,9 @@
     <string name="reminder_channel_name">Recordatoris d\'exercicis</string>
     <string name="reminder_channel_description">Recordatoris diaris dels exercicis pendents</string>
     <string name="reminder_notification_title">Exercicis d\'avui</string>
+    <string name="reminder_general_message">És moment de moure\'t una mica avui</string>
+    <string name="reminder_remaining_message">En queden %1$d: %2$s</string>
+    <string name="reminder_remaining_more_message">En queden %1$d: %2$s +%3$d més</string>
     <string name="app_updates">Actualitzacions de l\'aplicació</string>
     <string name="current_version">Versió actual: %1$s</string>
     <string name="check_for_updates">Cerca actualitzacions</string>
