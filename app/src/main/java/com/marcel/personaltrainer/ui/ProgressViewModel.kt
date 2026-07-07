@@ -35,6 +35,22 @@ data class DayProgress(
     val completedActivities: List<Activity> = emptyList(),
 )
 
+internal fun dayProgress(
+    date: LocalDate,
+    activities: List<Activity>,
+    completedIds: Set<String>,
+): DayProgress {
+    val targetActivities = activities.filter { it.isScheduledOn(date.dayOfWeek) }
+    val completedActivities = activities.filter { it.id in completedIds }
+
+    return DayProgress(
+        date = date,
+        completedCount = completedActivities.size,
+        targetCount = targetActivities.size,
+        completedActivities = completedActivities,
+    )
+}
+
 data class ActivityTimer(
     val activityId: String,
     val totalSeconds: Long,
@@ -270,15 +286,10 @@ class ProgressViewModel(
     ): List<DayProgress> {
         val activities = repository.activities()
         return datesForPeriod(anchorDate, period).map { day ->
-            val targetActivities = activities.filter { it.isScheduledOn(day.dayOfWeek) }
-            val targetIds = targetActivities.map(Activity::id).toSet()
-            val completedIds = repository.completedActivityIds(day)
-            val completedActivities = targetActivities.filter { it.id in completedIds }
-            DayProgress(
+            dayProgress(
                 date = day,
-                completedCount = completedIds.count(targetIds::contains),
-                targetCount = targetIds.size,
-                completedActivities = completedActivities,
+                activities = activities,
+                completedIds = repository.completedActivityIds(day),
             )
         }
     }
