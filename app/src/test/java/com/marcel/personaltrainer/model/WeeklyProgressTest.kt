@@ -45,6 +45,33 @@ class WeeklyProgressTest {
 
         assertEquals(2, progress.completedCount)
         assertEquals(2, progress.targetCount)
+        assertEquals(0, progress.remainingCount)
+        assertEquals(100f, progress.percentage, 0.001f)
+        assertEquals(true, progress.isComplete)
+    }
+
+    @Test
+    fun weeklyProgressSummarizesRemainingGoal() {
+        val progress = WeeklyProgress(
+            completedCount = 3,
+            targetCount = 5,
+        )
+
+        assertEquals(2, progress.remainingCount)
+        assertEquals(60f, progress.percentage, 0.001f)
+        assertEquals(false, progress.isComplete)
+    }
+
+    @Test
+    fun weeklyProgressHandlesNoTarget() {
+        val progress = WeeklyProgress(
+            completedCount = 0,
+            targetCount = 0,
+        )
+
+        assertEquals(0, progress.remainingCount)
+        assertEquals(0f, progress.percentage, 0.001f)
+        assertEquals(false, progress.isComplete)
     }
 
     private fun activity(id: String, weekdays: Set<DayOfWeek>) = Activity(

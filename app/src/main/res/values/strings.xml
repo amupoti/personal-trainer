@@ -15,6 +15,8 @@
     <string name="no_exercises">No exercises yet</string>
     <string name="completed_count">%1$d of %2$d completed</string>
     <string name="weekly_completed_count">%1$d of %2$d completed this week</string>
+    <string name="weekly_goal_percentage">%1$d%% complete</string>
+    <string name="weekly_goal_complete">Perfect week complete</string>
     <string name="suggested_today">Suggested today</string>
     <string name="other_exercises">Other exercises</string>
     <string name="daily_streak">Daily streak</string>
@@ -109,6 +111,10 @@
     <plurals name="remaining_exercises">
         <item quantity="one">%d exercise remaining</item>
         <item quantity="other">%d exercises remaining</item>
+    </plurals>
+    <plurals name="weekly_goal_remaining">
+        <item quantity="one">%d left for a perfect week</item>
+        <item quantity="other">%d left for a perfect week</item>
     </plurals>
     <plurals name="streak_days">
         <item quantity="one">%d day</item>

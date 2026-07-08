@@ -11,6 +11,7 @@ import com.marcel.personaltrainer.model.ReminderSettings
 import com.marcel.personaltrainer.model.StreakStats
 import com.marcel.personaltrainer.model.TargetUnit
 import com.marcel.personaltrainer.model.ThemePreference
+import com.marcel.personaltrainer.model.WeeklyProgress
 import com.marcel.personaltrainer.model.calculateExerciseStats
 import com.marcel.personaltrainer.model.calculateWeeklyProgress
 import com.marcel.personaltrainer.model.calculateStreak
@@ -71,8 +72,7 @@ data class ProgressUiState(
     val suggestedActivities: List<Activity> = emptyList(),
     val allActivities: List<Activity> = emptyList(),
     val completedIds: Set<String> = emptySet(),
-    val weeklyCompletedCount: Int = 0,
-    val weeklyTargetCount: Int = 0,
+    val weeklyProgress: WeeklyProgress = WeeklyProgress(0, 0),
     val calendarPeriod: CalendarPeriod = CalendarPeriod.WEEK,
     val calendarAnchorDate: LocalDate = date,
     val calendarDays: List<DayProgress> = emptyList(),
@@ -261,8 +261,7 @@ class ProgressViewModel(
             suggestedActivities = scheduled,
             allActivities = activities,
             completedIds = completedIds.intersect(activities.map(Activity::id).toSet()),
-            weeklyCompletedCount = weeklyProgress.completedCount,
-            weeklyTargetCount = weeklyProgress.targetCount,
+            weeklyProgress = weeklyProgress,
             calendarAnchorDate = date,
             calendarDays = calendarProgress(date, CalendarPeriod.WEEK),
             streak = calculateStreak(activities, history, date),
@@ -297,8 +296,7 @@ class ProgressViewModel(
             allActivities = activities,
             completedIds = repository.completedActivityIds(date)
                 .intersect(activities.map(Activity::id).toSet()),
-            weeklyCompletedCount = weeklyProgress.completedCount,
-            weeklyTargetCount = weeklyProgress.targetCount,
+            weeklyProgress = weeklyProgress,
             calendarDays = calendarProgress(current.calendarAnchorDate, current.calendarPeriod),
             streak = calculateStreak(activities, history, date),
             weeklyExerciseStats = calculateExerciseStats(

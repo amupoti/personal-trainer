@@ -15,6 +15,8 @@
     <string name="no_exercises">Encara no hi ha exercicis</string>
     <string name="completed_count">%1$d de %2$d completats</string>
     <string name="weekly_completed_count">%1$d de %2$d completats aquesta setmana</string>
+    <string name="weekly_goal_percentage">%1$d%% completat</string>
+    <string name="weekly_goal_complete">Setmana perfecta completada</string>
     <string name="suggested_today">Suggerits avui</string>
     <string name="other_exercises">Altres exercicis</string>
     <string name="daily_streak">Ratxa diària</string>
@@ -108,6 +110,10 @@
     <plurals name="remaining_exercises">
         <item quantity="one">Queda %d exercici</item>
         <item quantity="other">Queden %d exercicis</item>
+    </plurals>
+    <plurals name="weekly_goal_remaining">
+        <item quantity="one">En queda %d per a una setmana perfecta</item>
+        <item quantity="other">En queden %d per a una setmana perfecta</item>
     </plurals>
     <plurals name="streak_days">
         <item quantity="one">%d dia</item>

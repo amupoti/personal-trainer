@@ -90,6 +90,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     private val viewModel: ProgressViewModel by viewModels {
@@ -375,8 +376,9 @@ fun ProgressScreen(
         contentPadding = PaddingValues(bottom = 20.dp),
     ) {
         item {
-            val completed = state.weeklyCompletedCount
-            val total = state.weeklyTargetCount
+            val weeklyProgress = state.weeklyProgress
+            val completed = weeklyProgress.completedCount
+            val total = weeklyProgress.targetCount
             Surface(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -402,12 +404,35 @@ fun ProgressScreen(
                     if (total > 0) {
                         Spacer(Modifier.height(16.dp))
                         LinearProgressIndicator(
-                            progress = { completed.toFloat() / total },
+                            progress = { weeklyProgress.percentage / 100f },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(8.dp),
                             color = MaterialTheme.colorScheme.primary,
                             trackColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.55f),
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            text = stringResource(
+                                R.string.weekly_goal_percentage,
+                                weeklyProgress.percentage.roundToInt(),
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = if (weeklyProgress.isComplete) {
+                                stringResource(R.string.weekly_goal_complete)
+                            } else {
+                                pluralStringResource(
+                                    R.plurals.weekly_goal_remaining,
+                                    weeklyProgress.remainingCount,
+                                    weeklyProgress.remainingCount,
+                                )
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.secondary,
                         )
                     }
                 }
