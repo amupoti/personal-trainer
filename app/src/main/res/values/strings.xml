@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Daily Movement</string>
+    <string name="app_name">Personal Trainer</string>
     <string name="navigation_today">Today</string>
     <string name="navigation_calendar">Calendar</string>
     <string name="navigation_exercises">Exercises</string>
@@ -9,7 +9,7 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_system">System</string>
-    <string name="title_daily_movement">Daily movement</string>
+    <string name="title_daily_movement">Personal Trainer</string>
     <string name="subtitle_daily_movement">Small steps, every day</string>
     <string name="nothing_scheduled_today">Nothing scheduled today</string>
     <string name="no_exercises">No exercises yet</string>
@@ -28,13 +28,19 @@
     <string name="start_timer">Start timer</string>
     <string name="open_video">Open video</string>
     <string name="my_exercises">My exercises</string>
-    <string name="exercise_tab_stats">Stats</string>
+    <string name="exercise_tab_stats">Insights</string>
     <string name="exercise_tab_manage">Manage</string>
     <string name="exercise_stats">Exercise stats</string>
+    <string name="exercise_insights">Exercise insights</string>
     <string name="exercise_stats_this_week">This week</string>
     <string name="exercise_stats_this_month">This month</string>
-    <string name="exercise_stats_empty">No completed exercises in this period</string>
+    <string name="exercise_stats_empty">No scheduled exercises in this period</string>
     <string name="exercise_stat_percentage">%1$d%%</string>
+    <string name="exercise_insight_completed_of_scheduled">%1$d of %2$d scheduled completed (%3$d%%)</string>
+    <string name="exercise_insight_best_day">Best day</string>
+    <string name="exercise_insight_weakest_day">Weakest day</string>
+    <string name="exercise_insight_weekday_detail">%1$s: %2$s, %3$d%%</string>
+    <string name="exercise_stat_completed_of_scheduled">%1$d of %2$d scheduled</string>
     <string name="add_exercise">Add exercise</string>
     <string name="build_your_routine">Build your routine</string>
     <string name="add_exercise_empty_message">Add an exercise to start tracking your movement.</string>
@@ -96,7 +102,7 @@
     <string name="update_downloaded">The update is ready to install</string>
     <string name="install_update">Install update</string>
     <string name="update_download_failed">Could not download or install the update</string>
-    <string name="update_download_title">Daily Movement %1$s</string>
+    <string name="update_download_title">Personal Trainer %1$s</string>
     <string name="update_download_description">Downloading app update</string>
     <string name="app_is_up_to_date">The app is up to date</string>
     <string name="update_check_failed">Could not check for updates</string>

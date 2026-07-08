@@ -49,18 +49,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.marcel.personaltrainer.model.Activity
+import com.marcel.personaltrainer.model.ExerciseInsights
 import com.marcel.personaltrainer.model.ExerciseStat
 import com.marcel.personaltrainer.model.TargetUnit
+import com.marcel.personaltrainer.model.WeekdayStat
 import com.marcel.personaltrainer.model.isValidVideoUrl
 import java.time.DayOfWeek
 import java.time.format.TextStyle
+import java.util.Locale
 import kotlin.math.roundToInt
 
 @Composable
 fun ExerciseScreen(
     activities: List<Activity>,
-    weeklyStats: List<ExerciseStat>,
-    monthlyStats: List<ExerciseStat>,
+    weeklyStats: ExerciseInsights,
+    monthlyStats: ExerciseInsights,
     onAdd: () -> Unit,
     onEdit: (Activity) -> Unit,
     onDelete: (String) -> Unit,
@@ -97,9 +100,10 @@ fun ExerciseScreen(
 
 @Composable
 private fun ExerciseStatsScreen(
-    weeklyStats: List<ExerciseStat>,
-    monthlyStats: List<ExerciseStat>,
+    weeklyStats: ExerciseInsights,
+    monthlyStats: ExerciseInsights,
 ) {
+    val locale = LocalLocale.current.platformLocale
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -109,20 +113,22 @@ private fun ExerciseStatsScreen(
     ) {
         item {
             Text(
-                text = stringResource(R.string.exercise_stats),
+                text = stringResource(R.string.exercise_insights),
                 style = MaterialTheme.typography.titleLarge,
             )
         }
         item {
             ExerciseStatsSection(
                 title = stringResource(R.string.exercise_stats_this_week),
-                stats = weeklyStats,
+                insights = weeklyStats,
+                locale = locale,
             )
         }
         item {
             ExerciseStatsSection(
                 title = stringResource(R.string.exercise_stats_this_month),
-                stats = monthlyStats,
+                insights = monthlyStats,
+                locale = locale,
             )
         }
     }
@@ -131,7 +137,8 @@ private fun ExerciseStatsScreen(
 @Composable
 private fun ExerciseStatsSection(
     title: String,
-    stats: List<ExerciseStat>,
+    insights: ExerciseInsights,
+    locale: Locale,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -147,18 +154,70 @@ private fun ExerciseStatsSection(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
             )
-            if (stats.isEmpty()) {
+            if (insights.scheduledCount == 0) {
                 Text(
                     text = stringResource(R.string.exercise_stats_empty),
                     color = MaterialTheme.colorScheme.secondary,
                 )
             } else {
-                stats.forEach { stat ->
+                InsightSummary(insights = insights, locale = locale)
+                insights.exerciseStats.forEach { stat ->
                     ExerciseStatRow(stat)
                 }
             }
         }
     }
+}
+
+@Composable
+private fun InsightSummary(
+    insights: ExerciseInsights,
+    locale: Locale,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = stringResource(
+                R.string.exercise_insight_completed_of_scheduled,
+                insights.completedCount,
+                insights.scheduledCount,
+                insights.percentage.roundToInt(),
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+        insights.bestWeekday?.let { weekday ->
+            WeekdayInsightRow(
+                label = stringResource(R.string.exercise_insight_best_day),
+                stat = weekday,
+                locale = locale,
+            )
+        }
+        insights.weakestWeekday?.let { weekday ->
+            WeekdayInsightRow(
+                label = stringResource(R.string.exercise_insight_weakest_day),
+                stat = weekday,
+                locale = locale,
+            )
+        }
+    }
+}
+
+@Composable
+private fun WeekdayInsightRow(
+    label: String,
+    stat: WeekdayStat,
+    locale: Locale,
+) {
+    Text(
+        text = stringResource(
+            R.string.exercise_insight_weekday_detail,
+            label,
+            stat.dayOfWeek.getDisplayName(TextStyle.FULL, locale),
+            stat.percentage.roundToInt(),
+        ),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.secondary,
+    )
 }
 
 @Composable
@@ -191,10 +250,10 @@ private fun ExerciseStatRow(stat: ExerciseStat) {
             trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
         Text(
-            text = pluralStringResource(
-                R.plurals.exercise_stat_completions,
+            text = stringResource(
+                R.string.exercise_stat_completed_of_scheduled,
                 stat.completedCount,
-                stat.completedCount,
+                stat.scheduledCount,
             ),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.secondary,
