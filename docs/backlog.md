@@ -2,9 +2,6 @@
 
 ## Future Ideas
 
-- [ ] Add perfect-day and perfect-week achievements. A perfect day means all
-  scheduled exercises for that date were completed; a perfect week means weekly
-  completed count equals weekly scheduled count.
 - [ ] Add a small completion celebration when all daily exercises are done. When
   the last scheduled exercise is checked off, show a lightweight success state
   such as "Perfect day completed".

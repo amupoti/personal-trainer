@@ -27,6 +27,13 @@
     <string name="longest_streak">Longest: %1$s</string>
     <string name="milestone_badges">Milestone badges</string>
     <string name="milestone_unlocked">Unlocked</string>
+    <string name="perfect_achievements">Perfect achievements</string>
+    <string name="perfect_days">Perfect days</string>
+    <string name="perfect_weeks">Perfect weeks</string>
+    <string name="perfect_today_complete">Today is perfect</string>
+    <string name="perfect_today_incomplete">Complete today to add one</string>
+    <string name="perfect_week_complete">This week is perfect</string>
+    <string name="perfect_week_incomplete">Complete the weekly goal to add one</string>
     <string name="reset_timer">Reset timer</string>
     <string name="pause_timer">Pause timer</string>
     <string name="start_timer">Start timer</string>
@@ -129,6 +136,14 @@
     <plurals name="milestone_days_remaining">
         <item quantity="one">%d more completed day to unlock</item>
         <item quantity="other">%d more completed days to unlock</item>
+    </plurals>
+    <plurals name="perfect_day_count">
+        <item quantity="one">%d perfect day</item>
+        <item quantity="other">%d perfect days</item>
+    </plurals>
+    <plurals name="perfect_week_count">
+        <item quantity="one">%d perfect week</item>
+        <item quantity="other">%d perfect weeks</item>
     </plurals>
     <plurals name="exercise_stat_completions">
         <item quantity="one">%d completion</item>

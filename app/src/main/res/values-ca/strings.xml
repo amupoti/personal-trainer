@@ -27,6 +27,13 @@
     <string name="longest_streak">Màxima: %1$s</string>
     <string name="milestone_badges">Insígnies de fites</string>
     <string name="milestone_unlocked">Desbloquejada</string>
+    <string name="perfect_achievements">Assoliments perfectes</string>
+    <string name="perfect_days">Dies perfectes</string>
+    <string name="perfect_weeks">Setmanes perfectes</string>
+    <string name="perfect_today_complete">Avui és perfecte</string>
+    <string name="perfect_today_incomplete">Completa el dia d\'avui per sumar-ne un</string>
+    <string name="perfect_week_complete">Aquesta setmana és perfecta</string>
+    <string name="perfect_week_incomplete">Completa l\'objectiu setmanal per sumar-ne una</string>
     <string name="reset_timer">Reinicia el temporitzador</string>
     <string name="pause_timer">Pausa el temporitzador</string>
     <string name="start_timer">Inicia el temporitzador</string>
@@ -128,6 +135,14 @@
     <plurals name="milestone_days_remaining">
         <item quantity="one">Falta %d dia completat per desbloquejar-la</item>
         <item quantity="other">Falten %d dies completats per desbloquejar-la</item>
+    </plurals>
+    <plurals name="perfect_day_count">
+        <item quantity="one">%d dia perfecte</item>
+        <item quantity="other">%d dies perfectes</item>
+    </plurals>
+    <plurals name="perfect_week_count">
+        <item quantity="one">%d setmana perfecta</item>
+        <item quantity="other">%d setmanes perfectes</item>
     </plurals>
     <plurals name="exercise_stat_completions">
         <item quantity="one">%d compleció</item>

@@ -79,6 +79,7 @@ import com.marcel.personaltrainer.data.ProgressRepository
 import com.marcel.personaltrainer.model.Activity
 import com.marcel.personaltrainer.model.CalendarPeriod
 import com.marcel.personaltrainer.model.MilestoneBadge
+import com.marcel.personaltrainer.model.PerfectAchievements
 import com.marcel.personaltrainer.model.TargetUnit
 import com.marcel.personaltrainer.model.ThemePreference
 import com.marcel.personaltrainer.model.formatTimer
@@ -497,6 +498,9 @@ fun ProgressScreen(
                 MilestoneBadgesCard(badges = state.milestoneBadges)
             }
         }
+        item {
+            PerfectAchievementsCard(achievements = state.perfectAchievements)
+        }
         val suggestedIds = state.suggestedActivities.map(Activity::id).toSet()
         val otherActivities = state.activities.filterNot { it.id in suggestedIds }
         if (state.suggestedActivities.isNotEmpty()) {
@@ -539,6 +543,115 @@ fun ProgressScreen(
                 },
                 onToggleTimer = { onToggleTimer(activity.id) },
                 onResetTimer = { onResetTimer(activity.id) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun PerfectAchievementsCard(
+    achievements: PerfectAchievements,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    ) {
+        Column(
+            modifier = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.perfect_achievements),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            AchievementCountRow(
+                label = stringResource(R.string.perfect_days),
+                count = pluralStringResource(
+                    R.plurals.perfect_day_count,
+                    achievements.perfectDayCount,
+                    achievements.perfectDayCount,
+                ),
+                complete = achievements.isTodayPerfect,
+                status = if (achievements.isTodayPerfect) {
+                    stringResource(R.string.perfect_today_complete)
+                } else {
+                    stringResource(R.string.perfect_today_incomplete)
+                },
+            )
+            AchievementCountRow(
+                label = stringResource(R.string.perfect_weeks),
+                count = pluralStringResource(
+                    R.plurals.perfect_week_count,
+                    achievements.perfectWeekCount,
+                    achievements.perfectWeekCount,
+                ),
+                complete = achievements.isThisWeekPerfect,
+                status = if (achievements.isThisWeekPerfect) {
+                    stringResource(R.string.perfect_week_complete)
+                } else {
+                    stringResource(R.string.perfect_week_incomplete)
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun AchievementCountRow(
+    label: String,
+    count: String,
+    complete: Boolean,
+    status: String,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Surface(
+            modifier = Modifier.size(36.dp),
+            shape = CircleShape,
+            color = if (complete) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            },
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                if (complete) {
+                    Icon(
+                        imageVector = Icons.Rounded.Check,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
+                } else {
+                    Text(
+                        text = count.takeWhile(Char::isDigit),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.size(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = count,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+            Text(
+                text = status,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary,
             )
         }
     }
