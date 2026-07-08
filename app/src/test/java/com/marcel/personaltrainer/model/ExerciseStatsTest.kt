@@ -91,6 +91,46 @@ class ExerciseStatsTest {
         assertEquals(0f, insights.weakestWeekday?.percentage ?: 0f, 0.001f)
     }
 
+    @Test
+    fun calculateExerciseStatsSortsByCompletenessRatioBeforeCount() {
+        val lowerRatio = activity("lower", DayOfWeek.entries.toSet())
+        val higherRatio = activity("higher", setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY))
+        val dates = (0L..6L).map { LocalDate.of(2026, 7, 6).plusDays(it) }
+
+        val insights = calculateExerciseStats(
+            activities = listOf(higherRatio, lowerRatio),
+            completionHistory = mapOf(
+                dates[0] to setOf(lowerRatio.id, higherRatio.id),
+                dates[1] to setOf(lowerRatio.id, higherRatio.id),
+                dates[2] to setOf(lowerRatio.id),
+            ),
+            dates = dates,
+        )
+
+        assertEquals(listOf("lower", "higher"), insights.exerciseStats.map { it.activity.id })
+        assertEquals(3, insights.exerciseStats[0].completedCount)
+        assertEquals(7, insights.exerciseStats[0].scheduledCount)
+        assertEquals(2, insights.exerciseStats[1].completedCount)
+        assertEquals(2, insights.exerciseStats[1].scheduledCount)
+    }
+
+    @Test
+    fun calculateExerciseStatsIncludesTodayWhenItIsInDates() {
+        val activity = activity("today", setOf(DayOfWeek.WEDNESDAY))
+        val today = LocalDate.of(2026, 7, 8)
+
+        val insights = calculateExerciseStats(
+            activities = listOf(activity),
+            completionHistory = mapOf(today to setOf(activity.id)),
+            dates = listOf(today),
+        )
+
+        assertEquals(1, insights.completedCount)
+        assertEquals(1, insights.scheduledCount)
+        assertEquals(100f, insights.percentage, 0.001f)
+        assertEquals("today", insights.exerciseStats.single().activity.id)
+    }
+
     private fun activity(id: String, weekdays: Set<DayOfWeek>) = Activity(
         id = id,
         name = id,

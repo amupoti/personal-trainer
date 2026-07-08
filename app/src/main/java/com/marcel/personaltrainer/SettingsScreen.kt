@@ -408,6 +408,18 @@ private data class ChangelogEntry(
 
 private val changelogEntries = listOf(
     ChangelogEntry(
+        version = "v1.1.14",
+        changes = listOf(R.string.changelog_v1114_calendar_insights),
+    ),
+    ChangelogEntry(
+        version = "v1.1.13",
+        changes = listOf(R.string.changelog_v1113_achievements_tab),
+    ),
+    ChangelogEntry(
+        version = "v1.1.12",
+        changes = listOf(R.string.changelog_v1112_changelog),
+    ),
+    ChangelogEntry(
         version = "v1.1.11",
         changes = listOf(R.string.changelog_v1111_perfect_achievements),
     ),

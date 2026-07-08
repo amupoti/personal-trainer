@@ -123,6 +123,9 @@
     <string name="view_changelog">View changelog</string>
     <string name="close">Close</string>
     <string name="changelog_item">• %1$s</string>
+    <string name="changelog_v1114_calendar_insights">Fixed monthly calendar scrolling, sorted exercise insights by completeness ratio, and kept today in insight calculations.</string>
+    <string name="changelog_v1113_achievements_tab">Moved achievements to their own navigation tab.</string>
+    <string name="changelog_v1112_changelog">Added an in-app changelog in Settings.</string>
     <string name="changelog_v1111_perfect_achievements">Added perfect day and perfect week achievements.</string>
     <string name="changelog_v1110_milestone_badges">Added milestone badges for 7, 30, and 100 completed days.</string>
     <string name="changelog_v119_weekly_goal">Improved the weekly goal card with percentage, remaining exercises, and perfect-week progress.</string>

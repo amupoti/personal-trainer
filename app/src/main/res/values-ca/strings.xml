@@ -122,6 +122,9 @@
     <string name="view_changelog">Mostra el registre de canvis</string>
     <string name="close">Tanca</string>
     <string name="changelog_item">• %1$s</string>
+    <string name="changelog_v1114_calendar_insights">S\'ha corregit el desplaçament del calendari mensual, s\'ha ordenat la informació d\'exercicis per ràtio de compleció i s\'ha mantingut el dia d\'avui als càlculs.</string>
+    <string name="changelog_v1113_achievements_tab">S\'han mogut els assoliments a una pestanya de navegació pròpia.</string>
+    <string name="changelog_v1112_changelog">S\'ha afegit un registre de canvis dins de l\'aplicació a Configuració.</string>
     <string name="changelog_v1111_perfect_achievements">S\'han afegit assoliments de dia perfecte i setmana perfecta.</string>
     <string name="changelog_v1110_milestone_badges">S\'han afegit insígnies per a 7, 30 i 100 dies completats.</string>
     <string name="changelog_v119_weekly_goal">S\'ha millorat la targeta d\'objectiu setmanal amb percentatge, exercicis pendents i progrés de setmana perfecta.</string>

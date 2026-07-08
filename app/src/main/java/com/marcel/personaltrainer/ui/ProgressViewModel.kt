@@ -281,12 +281,12 @@ class ProgressViewModel(
             weeklyExerciseStats = calculateExerciseStats(
                 activities = activities,
                 completionHistory = history,
-                dates = datesForPeriod(date, CalendarPeriod.WEEK),
+                dates = insightDatesForPeriod(date, CalendarPeriod.WEEK),
             ),
             monthlyExerciseStats = calculateExerciseStats(
                 activities = activities,
                 completionHistory = history,
-                dates = datesForPeriod(date, CalendarPeriod.MONTH),
+                dates = insightDatesForPeriod(date, CalendarPeriod.MONTH),
             ),
             reminderSettings = repository.reminderSettings(),
             themePreference = repository.themePreference(),
@@ -317,12 +317,12 @@ class ProgressViewModel(
             weeklyExerciseStats = calculateExerciseStats(
                 activities = activities,
                 completionHistory = history,
-                dates = datesForPeriod(date, CalendarPeriod.WEEK),
+                dates = insightDatesForPeriod(date, CalendarPeriod.WEEK),
             ),
             monthlyExerciseStats = calculateExerciseStats(
                 activities = activities,
                 completionHistory = history,
-                dates = datesForPeriod(date, CalendarPeriod.MONTH),
+                dates = insightDatesForPeriod(date, CalendarPeriod.MONTH),
             ),
         )
     }
@@ -340,6 +340,12 @@ class ProgressViewModel(
             )
         }
     }
+
+    private fun insightDatesForPeriod(
+        anchorDate: LocalDate,
+        period: CalendarPeriod,
+    ): List<LocalDate> =
+        datesForPeriod(anchorDate, period).filterNot { it.isAfter(anchorDate) }
 
     private fun updateReminderSettings(settings: ReminderSettings) {
         repository.saveReminderSettings(settings)

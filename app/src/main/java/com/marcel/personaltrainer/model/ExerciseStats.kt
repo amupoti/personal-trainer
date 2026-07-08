@@ -67,11 +67,7 @@ fun calculateExerciseStats(
                 )
             }
         }
-        .sortedWith(
-            compareBy<ExerciseStat> { it.percentage }
-                .thenByDescending { it.scheduledCount }
-                .thenBy { it.activity.name },
-        )
+        .sortedWith(exerciseStatComparator())
 
     val weekdayStats = weekdayCounts
         .mapNotNull { (dayOfWeek, counts) ->
@@ -104,6 +100,11 @@ private fun weakestWeekdayComparator(): Comparator<WeekdayStat> =
     compareBy<WeekdayStat> { it.percentage }
         .thenByDescending { it.scheduledCount }
         .thenBy { it.dayOfWeek.value }
+
+private fun exerciseStatComparator(): Comparator<ExerciseStat> =
+    compareBy<ExerciseStat> { it.percentage }
+        .thenByDescending { it.scheduledCount }
+        .thenBy { it.activity.name }
 
 private data class ActivityCounts(
     var completed: Int = 0,
