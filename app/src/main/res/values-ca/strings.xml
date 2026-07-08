@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Entrenador Personal</string>
     <string name="navigation_today">Avui</string>
-    <string name="navigation_calendar">Calendari</string>
-    <string name="navigation_exercises">Exercicis</string>
-    <string name="navigation_settings">Configuració</string>
+    <string name="navigation_calendar">Pla</string>
+    <string name="navigation_exercises">Entrena</string>
+    <string name="navigation_achievements">Fites</string>
+    <string name="navigation_settings">Opcions</string>
     <string name="appearance">Aparença</string>
     <string name="theme_description">Tria l\'aparença de l\'aplicació.</string>
     <string name="theme_light">Clar</string>

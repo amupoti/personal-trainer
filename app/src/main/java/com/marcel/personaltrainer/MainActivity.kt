@@ -256,6 +256,7 @@ private fun DailyMovementApp(
         Pair(stringResource(R.string.navigation_today), Icons.Rounded.Home),
         Pair(stringResource(R.string.navigation_calendar), Icons.Rounded.DateRange),
         Pair(stringResource(R.string.navigation_exercises), Icons.AutoMirrored.Rounded.List),
+        Pair(stringResource(R.string.navigation_achievements), Icons.Rounded.Check),
         Pair(stringResource(R.string.navigation_settings), Icons.Rounded.Settings),
     )
     Scaffold(
@@ -349,6 +350,8 @@ private fun DailyMovementApp(
                         onDelete = onDeleteActivity,
                     )
 
+                    3 -> AchievementsScreen(state = state)
+
                     else -> SettingsScreen(
                         settings = state.reminderSettings,
                         themePreference = state.themePreference,
@@ -440,67 +443,6 @@ fun ProgressScreen(
                 }
             }
         }
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            ) {
-                Column(modifier = Modifier.padding(18.dp)) {
-                    Text(
-                        text = stringResource(R.string.daily_streak),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = pluralStringResource(
-                            R.plurals.streak_days,
-                            state.streak.current,
-                            state.streak.current,
-                        ),
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = stringResource(
-                            when {
-                                !state.streak.isTodayScheduled -> R.string.streak_rest_day
-                                state.streak.isTodayComplete -> R.string.streak_extended_today
-                                state.streak.current > 0 -> R.string.complete_today_keep_streak
-                                else -> R.string.complete_today_start_streak
-                            },
-                        ),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = stringResource(
-                            R.string.longest_streak,
-                            pluralStringResource(
-                                R.plurals.streak_days,
-                                state.streak.longest,
-                                state.streak.longest,
-                            ),
-                        ),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
-                }
-            }
-        }
-        if (state.milestoneBadges.isNotEmpty()) {
-            item {
-                MilestoneBadgesCard(badges = state.milestoneBadges)
-            }
-        }
-        item {
-            PerfectAchievementsCard(achievements = state.perfectAchievements)
-        }
         val suggestedIds = state.suggestedActivities.map(Activity::id).toSet()
         val otherActivities = state.activities.filterNot { it.id in suggestedIds }
         if (state.suggestedActivities.isNotEmpty()) {
@@ -543,6 +485,88 @@ fun ProgressScreen(
                 },
                 onToggleTimer = { onToggleTimer(activity.id) },
                 onResetTimer = { onResetTimer(activity.id) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun AchievementsScreen(
+    state: ProgressUiState,
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+        contentPadding = PaddingValues(bottom = 20.dp),
+    ) {
+        item {
+            StreakCard(state = state)
+        }
+        if (state.milestoneBadges.isNotEmpty()) {
+            item {
+                MilestoneBadgesCard(badges = state.milestoneBadges)
+            }
+        }
+        item {
+            PerfectAchievementsCard(achievements = state.perfectAchievements)
+        }
+    }
+}
+
+@Composable
+private fun StreakCard(
+    state: ProgressUiState,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    ) {
+        Column(modifier = Modifier.padding(18.dp)) {
+            Text(
+                text = stringResource(R.string.daily_streak),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = pluralStringResource(
+                    R.plurals.streak_days,
+                    state.streak.current,
+                    state.streak.current,
+                ),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = stringResource(
+                    when {
+                        !state.streak.isTodayScheduled -> R.string.streak_rest_day
+                        state.streak.isTodayComplete -> R.string.streak_extended_today
+                        state.streak.current > 0 -> R.string.complete_today_keep_streak
+                        else -> R.string.complete_today_start_streak
+                    },
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = stringResource(
+                    R.string.longest_streak,
+                    pluralStringResource(
+                        R.plurals.streak_days,
+                        state.streak.longest,
+                        state.streak.longest,
+                    ),
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary,
             )
         }
     }
