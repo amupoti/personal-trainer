@@ -4,6 +4,7 @@ import android.app.TimePickerDialog
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +26,7 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +58,7 @@ fun SettingsScreen(
     }
     val scope = rememberCoroutineScope()
     var updateState by remember { mutableStateOf<UpdateState>(UpdateState.Idle) }
+    var showingChangelog by remember { mutableStateOf(false) }
     val installPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
     ) {
@@ -307,6 +312,81 @@ fun SettingsScreen(
                 }
             }
         }
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            ) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Text(
+                        text = stringResource(R.string.changelog),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.changelog_description),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    OutlinedButton(onClick = { showingChangelog = true }) {
+                        Text(stringResource(R.string.view_changelog))
+                    }
+                }
+            }
+        }
+    }
+
+    if (showingChangelog) {
+        ChangelogDialog(onDismiss = { showingChangelog = false })
+    }
+}
+
+@Composable
+private fun ChangelogDialog(
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.changelog)) },
+        text = {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                changelogEntries.forEach { entry ->
+                    ChangelogEntryRow(entry = entry)
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.close))
+            }
+        },
+    )
+}
+
+@Composable
+private fun ChangelogEntryRow(
+    entry: ChangelogEntry,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            text = entry.version,
+            style = MaterialTheme.typography.titleSmall,
+        )
+        entry.changes.forEach { change ->
+            Text(
+                text = stringResource(R.string.changelog_item, stringResource(change)),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+        }
     }
 }
 
@@ -320,6 +400,66 @@ private sealed interface UpdateState {
     data class Available(val release: AppRelease) : UpdateState
     data class ReadyToInstall(val apkUri: Uri) : UpdateState
 }
+
+private data class ChangelogEntry(
+    val version: String,
+    val changes: List<Int>,
+)
+
+private val changelogEntries = listOf(
+    ChangelogEntry(
+        version = "v1.1.11",
+        changes = listOf(R.string.changelog_v1111_perfect_achievements),
+    ),
+    ChangelogEntry(
+        version = "v1.1.10",
+        changes = listOf(R.string.changelog_v1110_milestone_badges),
+    ),
+    ChangelogEntry(
+        version = "v1.1.9",
+        changes = listOf(R.string.changelog_v119_weekly_goal),
+    ),
+    ChangelogEntry(
+        version = "v1.1.8",
+        changes = listOf(R.string.changelog_v118_app_icon),
+    ),
+    ChangelogEntry(
+        version = "v1.1.7",
+        changes = listOf(R.string.changelog_v117_exercise_insights),
+    ),
+    ChangelogEntry(
+        version = "v1.1.6",
+        changes = listOf(R.string.changelog_v116_smart_reminders),
+    ),
+    ChangelogEntry(
+        version = "v1.1.5",
+        changes = listOf(R.string.changelog_v115_exercise_stats),
+    ),
+    ChangelogEntry(
+        version = "v1.1.4",
+        changes = listOf(R.string.changelog_v114_extra_calendar),
+    ),
+    ChangelogEntry(
+        version = "v1.1.3",
+        changes = listOf(R.string.changelog_v113_calendar_completions),
+    ),
+    ChangelogEntry(
+        version = "v1.1.2",
+        changes = listOf(R.string.changelog_v112_gradle_jdk),
+    ),
+    ChangelogEntry(
+        version = "v1.1.1",
+        changes = listOf(R.string.changelog_v111_weekly_tracking),
+    ),
+    ChangelogEntry(
+        version = "v1.1.0",
+        changes = listOf(R.string.changelog_v110_streaks),
+    ),
+    ChangelogEntry(
+        version = "v1.0.0",
+        changes = listOf(R.string.changelog_v100_release_updates),
+    ),
+)
 
 @Composable
 private fun ReminderTimeRow(
