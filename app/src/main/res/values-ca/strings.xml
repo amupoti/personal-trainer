@@ -25,6 +25,8 @@
     <string name="streak_extended_today">Avui compta per a la teva ratxa</string>
     <string name="streak_rest_day">Dia de descans — la ratxa està protegida</string>
     <string name="longest_streak">Màxima: %1$s</string>
+    <string name="milestone_badges">Insígnies de fites</string>
+    <string name="milestone_unlocked">Desbloquejada</string>
     <string name="reset_timer">Reinicia el temporitzador</string>
     <string name="pause_timer">Pausa el temporitzador</string>
     <string name="start_timer">Inicia el temporitzador</string>
@@ -118,6 +120,14 @@
     <plurals name="streak_days">
         <item quantity="one">%d dia</item>
         <item quantity="other">%d dies</item>
+    </plurals>
+    <plurals name="milestone_completed_days">
+        <item quantity="one">%d dia completat</item>
+        <item quantity="other">%d dies completats</item>
+    </plurals>
+    <plurals name="milestone_days_remaining">
+        <item quantity="one">Falta %d dia completat per desbloquejar-la</item>
+        <item quantity="other">Falten %d dies completats per desbloquejar-la</item>
     </plurals>
     <plurals name="exercise_stat_completions">
         <item quantity="one">%d compleció</item>

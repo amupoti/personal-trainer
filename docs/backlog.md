@@ -2,8 +2,6 @@
 
 ## Future Ideas
 
-- [ ] Add milestone badges for 7, 30, and 100 completed days. These can be
-  calculated from completion history without adding new storage.
 - [ ] Add perfect-day and perfect-week achievements. A perfect day means all
   scheduled exercises for that date were completed; a perfect week means weekly
   completed count equals weekly scheduled count.

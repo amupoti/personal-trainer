@@ -7,12 +7,14 @@ import com.marcel.personaltrainer.data.ProgressRepository
 import com.marcel.personaltrainer.model.Activity
 import com.marcel.personaltrainer.model.CalendarPeriod
 import com.marcel.personaltrainer.model.ExerciseInsights
+import com.marcel.personaltrainer.model.MilestoneBadge
 import com.marcel.personaltrainer.model.ReminderSettings
 import com.marcel.personaltrainer.model.StreakStats
 import com.marcel.personaltrainer.model.TargetUnit
 import com.marcel.personaltrainer.model.ThemePreference
 import com.marcel.personaltrainer.model.WeeklyProgress
 import com.marcel.personaltrainer.model.calculateExerciseStats
+import com.marcel.personaltrainer.model.calculateMilestoneBadges
 import com.marcel.personaltrainer.model.calculateWeeklyProgress
 import com.marcel.personaltrainer.model.calculateStreak
 import com.marcel.personaltrainer.model.datesForPeriod
@@ -77,6 +79,7 @@ data class ProgressUiState(
     val calendarAnchorDate: LocalDate = date,
     val calendarDays: List<DayProgress> = emptyList(),
     val streak: StreakStats = StreakStats(),
+    val milestoneBadges: List<MilestoneBadge> = emptyList(),
     val weeklyExerciseStats: ExerciseInsights = calculateExerciseStats(
         activities = emptyList(),
         completionHistory = emptyMap(),
@@ -265,6 +268,7 @@ class ProgressViewModel(
             calendarAnchorDate = date,
             calendarDays = calendarProgress(date, CalendarPeriod.WEEK),
             streak = calculateStreak(activities, history, date),
+            milestoneBadges = calculateMilestoneBadges(activities, history, date),
             weeklyExerciseStats = calculateExerciseStats(
                 activities = activities,
                 completionHistory = history,
@@ -299,6 +303,7 @@ class ProgressViewModel(
             weeklyProgress = weeklyProgress,
             calendarDays = calendarProgress(current.calendarAnchorDate, current.calendarPeriod),
             streak = calculateStreak(activities, history, date),
+            milestoneBadges = calculateMilestoneBadges(activities, history, date),
             weeklyExerciseStats = calculateExerciseStats(
                 activities = activities,
                 completionHistory = history,

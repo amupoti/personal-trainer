@@ -25,6 +25,8 @@
     <string name="streak_extended_today">Today counts toward your streak</string>
     <string name="streak_rest_day">Rest day — your streak is safe</string>
     <string name="longest_streak">Longest: %1$s</string>
+    <string name="milestone_badges">Milestone badges</string>
+    <string name="milestone_unlocked">Unlocked</string>
     <string name="reset_timer">Reset timer</string>
     <string name="pause_timer">Pause timer</string>
     <string name="start_timer">Start timer</string>
@@ -119,6 +121,14 @@
     <plurals name="streak_days">
         <item quantity="one">%d day</item>
         <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="milestone_completed_days">
+        <item quantity="one">%d completed day</item>
+        <item quantity="other">%d completed days</item>
+    </plurals>
+    <plurals name="milestone_days_remaining">
+        <item quantity="one">%d more completed day to unlock</item>
+        <item quantity="other">%d more completed days to unlock</item>
     </plurals>
     <plurals name="exercise_stat_completions">
         <item quantity="one">%d completion</item>

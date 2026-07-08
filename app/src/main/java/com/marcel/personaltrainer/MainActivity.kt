@@ -78,6 +78,7 @@ import androidx.core.content.ContextCompat
 import com.marcel.personaltrainer.data.ProgressRepository
 import com.marcel.personaltrainer.model.Activity
 import com.marcel.personaltrainer.model.CalendarPeriod
+import com.marcel.personaltrainer.model.MilestoneBadge
 import com.marcel.personaltrainer.model.TargetUnit
 import com.marcel.personaltrainer.model.ThemePreference
 import com.marcel.personaltrainer.model.formatTimer
@@ -491,6 +492,11 @@ fun ProgressScreen(
                 }
             }
         }
+        if (state.milestoneBadges.isNotEmpty()) {
+            item {
+                MilestoneBadgesCard(badges = state.milestoneBadges)
+            }
+        }
         val suggestedIds = state.suggestedActivities.map(Activity::id).toSet()
         val otherActivities = state.activities.filterNot { it.id in suggestedIds }
         if (state.suggestedActivities.isNotEmpty()) {
@@ -533,6 +539,94 @@ fun ProgressScreen(
                 },
                 onToggleTimer = { onToggleTimer(activity.id) },
                 onResetTimer = { onResetTimer(activity.id) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun MilestoneBadgesCard(
+    badges: List<MilestoneBadge>,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    ) {
+        Column(
+            modifier = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.milestone_badges),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            badges.forEach { badge ->
+                MilestoneBadgeRow(badge = badge)
+            }
+        }
+    }
+}
+
+@Composable
+private fun MilestoneBadgeRow(
+    badge: MilestoneBadge,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Surface(
+            modifier = Modifier.size(36.dp),
+            shape = CircleShape,
+            color = if (badge.isUnlocked) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant
+            },
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                if (badge.isUnlocked) {
+                    Icon(
+                        imageVector = Icons.Rounded.Check,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
+                } else {
+                    Text(
+                        text = badge.completedDayTarget.toString(),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+            }
+        }
+        Spacer(Modifier.size(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = pluralStringResource(
+                    R.plurals.milestone_completed_days,
+                    badge.completedDayTarget,
+                    badge.completedDayTarget,
+                ),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                text = if (badge.isUnlocked) {
+                    stringResource(R.string.milestone_unlocked)
+                } else {
+                    pluralStringResource(
+                        R.plurals.milestone_days_remaining,
+                        badge.remainingCount,
+                        badge.remainingCount,
+                    )
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary,
             )
         }
     }
