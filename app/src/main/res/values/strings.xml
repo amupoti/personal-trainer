@@ -46,9 +46,16 @@
     <string name="exercise_insights">Exercise insights</string>
     <string name="exercise_stats_this_week">This week</string>
     <string name="exercise_stats_this_month">This month</string>
+    <string name="exercise_stats_this_year">This year</string>
     <string name="exercise_stats_empty">No scheduled exercises in this period</string>
     <string name="exercise_stat_percentage">%1$d%%</string>
     <string name="exercise_insight_completed_of_scheduled">%1$d of %2$d scheduled completed (%3$d%%)</string>
+    <string name="exercise_insight_trend_up">Up %1$d pts from %2$s</string>
+    <string name="exercise_insight_trend_down">Down %1$d pts from %2$s</string>
+    <string name="exercise_insight_trend_unchanged">Unchanged from %1$s</string>
+    <string name="exercise_trend_previous_week">previous week</string>
+    <string name="exercise_trend_previous_month">previous month</string>
+    <string name="exercise_trend_previous_year">previous year</string>
     <string name="exercise_insight_best_day">Best day</string>
     <string name="exercise_insight_weakest_day">Weakest day</string>
     <string name="exercise_insight_weekday_detail">%1$s: %2$s, %3$d%%</string>
@@ -123,6 +130,7 @@
     <string name="view_changelog">View changelog</string>
     <string name="close">Close</string>
     <string name="changelog_item">• %1$s</string>
+    <string name="changelog_v1115_insight_trends">Added weekly, monthly, and yearly insight trends compared with previous periods.</string>
     <string name="changelog_v1114_calendar_insights">Fixed monthly calendar scrolling, sorted exercise insights by completeness ratio, and kept today in insight calculations.</string>
     <string name="changelog_v1113_achievements_tab">Moved achievements to their own navigation tab.</string>
     <string name="changelog_v1112_changelog">Added an in-app changelog in Settings.</string>

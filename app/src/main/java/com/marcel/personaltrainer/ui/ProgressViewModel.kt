@@ -6,6 +6,7 @@ import com.marcel.personaltrainer.ExerciseReminderScheduler
 import com.marcel.personaltrainer.data.ProgressRepository
 import com.marcel.personaltrainer.model.Activity
 import com.marcel.personaltrainer.model.CalendarPeriod
+import com.marcel.personaltrainer.model.CompletionTrend
 import com.marcel.personaltrainer.model.ExerciseInsights
 import com.marcel.personaltrainer.model.MilestoneBadge
 import com.marcel.personaltrainer.model.PerfectAchievements
@@ -15,6 +16,7 @@ import com.marcel.personaltrainer.model.TargetUnit
 import com.marcel.personaltrainer.model.ThemePreference
 import com.marcel.personaltrainer.model.WeeklyProgress
 import com.marcel.personaltrainer.model.calculateExerciseStats
+import com.marcel.personaltrainer.model.calculateCompletionTrend
 import com.marcel.personaltrainer.model.calculateMilestoneBadges
 import com.marcel.personaltrainer.model.calculatePerfectAchievements
 import com.marcel.personaltrainer.model.calculateWeeklyProgress
@@ -24,6 +26,7 @@ import com.marcel.personaltrainer.model.timerDurationSeconds
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -97,6 +100,23 @@ data class ProgressUiState(
         activities = emptyList(),
         completionHistory = emptyMap(),
         dates = emptyList(),
+    ),
+    val yearlyExerciseStats: ExerciseInsights = calculateExerciseStats(
+        activities = emptyList(),
+        completionHistory = emptyMap(),
+        dates = emptyList(),
+    ),
+    val weeklyExerciseTrend: CompletionTrend = calculateCompletionTrend(
+        current = weeklyExerciseStats,
+        previous = weeklyExerciseStats,
+    ),
+    val monthlyExerciseTrend: CompletionTrend = calculateCompletionTrend(
+        current = monthlyExerciseStats,
+        previous = monthlyExerciseStats,
+    ),
+    val yearlyExerciseTrend: CompletionTrend = calculateCompletionTrend(
+        current = yearlyExerciseStats,
+        previous = yearlyExerciseStats,
     ),
     val timer: ActivityTimer? = null,
     val reminderSettings: ReminderSettings = ReminderSettings(),
@@ -266,6 +286,21 @@ class ProgressViewModel(
             history,
             date,
         )
+        val weeklyStats = calculateExerciseStats(
+            activities = activities,
+            completionHistory = history,
+            dates = insightDatesForPeriod(date, CalendarPeriod.WEEK),
+        )
+        val monthlyStats = calculateExerciseStats(
+            activities = activities,
+            completionHistory = history,
+            dates = insightDatesForPeriod(date, CalendarPeriod.MONTH),
+        )
+        val yearlyStats = calculateExerciseStats(
+            activities = activities,
+            completionHistory = history,
+            dates = insightDatesForYear(date),
+        )
         return ProgressUiState(
             date = date,
             activities = activities,
@@ -278,15 +313,32 @@ class ProgressViewModel(
             streak = calculateStreak(activities, history, date),
             milestoneBadges = calculateMilestoneBadges(activities, history, date),
             perfectAchievements = calculatePerfectAchievements(activities, history, date),
-            weeklyExerciseStats = calculateExerciseStats(
-                activities = activities,
-                completionHistory = history,
-                dates = insightDatesForPeriod(date, CalendarPeriod.WEEK),
+            weeklyExerciseStats = weeklyStats,
+            monthlyExerciseStats = monthlyStats,
+            yearlyExerciseStats = yearlyStats,
+            weeklyExerciseTrend = calculateCompletionTrend(
+                current = weeklyStats,
+                previous = calculateExerciseStats(
+                    activities = activities,
+                    completionHistory = history,
+                    dates = previousInsightDatesForPeriod(date, CalendarPeriod.WEEK),
+                ),
             ),
-            monthlyExerciseStats = calculateExerciseStats(
-                activities = activities,
-                completionHistory = history,
-                dates = insightDatesForPeriod(date, CalendarPeriod.MONTH),
+            monthlyExerciseTrend = calculateCompletionTrend(
+                current = monthlyStats,
+                previous = calculateExerciseStats(
+                    activities = activities,
+                    completionHistory = history,
+                    dates = previousInsightDatesForPeriod(date, CalendarPeriod.MONTH),
+                ),
+            ),
+            yearlyExerciseTrend = calculateCompletionTrend(
+                current = yearlyStats,
+                previous = calculateExerciseStats(
+                    activities = activities,
+                    completionHistory = history,
+                    dates = previousInsightDatesForYear(date),
+                ),
             ),
             reminderSettings = repository.reminderSettings(),
             themePreference = repository.themePreference(),
@@ -303,6 +355,21 @@ class ProgressViewModel(
             history,
             date,
         )
+        val weeklyStats = calculateExerciseStats(
+            activities = activities,
+            completionHistory = history,
+            dates = insightDatesForPeriod(date, CalendarPeriod.WEEK),
+        )
+        val monthlyStats = calculateExerciseStats(
+            activities = activities,
+            completionHistory = history,
+            dates = insightDatesForPeriod(date, CalendarPeriod.MONTH),
+        )
+        val yearlyStats = calculateExerciseStats(
+            activities = activities,
+            completionHistory = history,
+            dates = insightDatesForYear(date),
+        )
         _uiState.value = current.copy(
             activities = activities,
             suggestedActivities = scheduled,
@@ -314,15 +381,32 @@ class ProgressViewModel(
             streak = calculateStreak(activities, history, date),
             milestoneBadges = calculateMilestoneBadges(activities, history, date),
             perfectAchievements = calculatePerfectAchievements(activities, history, date),
-            weeklyExerciseStats = calculateExerciseStats(
-                activities = activities,
-                completionHistory = history,
-                dates = insightDatesForPeriod(date, CalendarPeriod.WEEK),
+            weeklyExerciseStats = weeklyStats,
+            monthlyExerciseStats = monthlyStats,
+            yearlyExerciseStats = yearlyStats,
+            weeklyExerciseTrend = calculateCompletionTrend(
+                current = weeklyStats,
+                previous = calculateExerciseStats(
+                    activities = activities,
+                    completionHistory = history,
+                    dates = previousInsightDatesForPeriod(date, CalendarPeriod.WEEK),
+                ),
             ),
-            monthlyExerciseStats = calculateExerciseStats(
-                activities = activities,
-                completionHistory = history,
-                dates = insightDatesForPeriod(date, CalendarPeriod.MONTH),
+            monthlyExerciseTrend = calculateCompletionTrend(
+                current = monthlyStats,
+                previous = calculateExerciseStats(
+                    activities = activities,
+                    completionHistory = history,
+                    dates = previousInsightDatesForPeriod(date, CalendarPeriod.MONTH),
+                ),
+            ),
+            yearlyExerciseTrend = calculateCompletionTrend(
+                current = yearlyStats,
+                previous = calculateExerciseStats(
+                    activities = activities,
+                    completionHistory = history,
+                    dates = previousInsightDatesForYear(date),
+                ),
             ),
         )
     }
@@ -346,6 +430,36 @@ class ProgressViewModel(
         period: CalendarPeriod,
     ): List<LocalDate> =
         datesForPeriod(anchorDate, period).filterNot { it.isAfter(anchorDate) }
+
+    private fun previousInsightDatesForPeriod(
+        anchorDate: LocalDate,
+        period: CalendarPeriod,
+    ): List<LocalDate> {
+        val currentDates = insightDatesForPeriod(anchorDate, period)
+        val previousStart = when (period) {
+            CalendarPeriod.WEEK -> currentDates.first().minusWeeks(1)
+            CalendarPeriod.MONTH -> anchorDate.withDayOfMonth(1).minusMonths(1)
+        }
+
+        val dayCount = when (period) {
+            CalendarPeriod.WEEK -> currentDates.size
+            CalendarPeriod.MONTH -> minOf(currentDates.size, previousStart.lengthOfMonth())
+        }
+
+        return (0L until dayCount).map(previousStart::plusDays)
+    }
+
+    private fun insightDatesForYear(anchorDate: LocalDate): List<LocalDate> {
+        val firstDay = anchorDate.withDayOfYear(1)
+        return (0L..ChronoUnit.DAYS.between(firstDay, anchorDate)).map(firstDay::plusDays)
+    }
+
+    private fun previousInsightDatesForYear(anchorDate: LocalDate): List<LocalDate> {
+        val currentDates = insightDatesForYear(anchorDate)
+        val previousStart = anchorDate.withDayOfYear(1).minusYears(1)
+        val dayCount = minOf(currentDates.size, previousStart.lengthOfYear())
+        return (0L until dayCount).map(previousStart::plusDays)
+    }
 
     private fun updateReminderSettings(settings: ReminderSettings) {
         repository.saveReminderSettings(settings)

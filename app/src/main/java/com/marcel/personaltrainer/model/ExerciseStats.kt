@@ -2,6 +2,8 @@ package com.marcel.personaltrainer.model
 
 import java.time.DayOfWeek
 import java.time.LocalDate
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 data class ExerciseInsights(
     val completedCount: Int,
@@ -13,6 +15,17 @@ data class ExerciseInsights(
     val percentage: Float
         get() = if (scheduledCount == 0) 0f else completedCount * 100f / scheduledCount
 }
+
+enum class CompletionTrendDirection {
+    UP,
+    DOWN,
+    UNCHANGED,
+}
+
+data class CompletionTrend(
+    val direction: CompletionTrendDirection,
+    val percentagePointChange: Int,
+)
 
 data class ExerciseStat(
     val activity: Activity,
@@ -88,6 +101,23 @@ fun calculateExerciseStats(
         exerciseStats = exerciseStats,
         bestWeekday = weekdayStats.sortedWith(bestWeekdayComparator()).firstOrNull(),
         weakestWeekday = weekdayStats.sortedWith(weakestWeekdayComparator()).firstOrNull(),
+    )
+}
+
+fun calculateCompletionTrend(
+    current: ExerciseInsights,
+    previous: ExerciseInsights,
+): CompletionTrend {
+    val change = (current.percentage - previous.percentage).roundToInt()
+    val direction = when {
+        change > 0 -> CompletionTrendDirection.UP
+        change < 0 -> CompletionTrendDirection.DOWN
+        else -> CompletionTrendDirection.UNCHANGED
+    }
+
+    return CompletionTrend(
+        direction = direction,
+        percentagePointChange = abs(change),
     )
 }
 

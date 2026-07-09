@@ -49,6 +49,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.marcel.personaltrainer.model.Activity
+import com.marcel.personaltrainer.model.CompletionTrend
+import com.marcel.personaltrainer.model.CompletionTrendDirection
 import com.marcel.personaltrainer.model.ExerciseInsights
 import com.marcel.personaltrainer.model.ExerciseStat
 import com.marcel.personaltrainer.model.TargetUnit
@@ -63,7 +65,11 @@ import kotlin.math.roundToInt
 fun ExerciseScreen(
     activities: List<Activity>,
     weeklyStats: ExerciseInsights,
+    weeklyTrend: CompletionTrend,
     monthlyStats: ExerciseInsights,
+    monthlyTrend: CompletionTrend,
+    yearlyStats: ExerciseInsights,
+    yearlyTrend: CompletionTrend,
     onAdd: () -> Unit,
     onEdit: (Activity) -> Unit,
     onDelete: (String) -> Unit,
@@ -85,7 +91,11 @@ fun ExerciseScreen(
         if (selectedTab == 0) {
             ExerciseStatsScreen(
                 weeklyStats = weeklyStats,
+                weeklyTrend = weeklyTrend,
                 monthlyStats = monthlyStats,
+                monthlyTrend = monthlyTrend,
+                yearlyStats = yearlyStats,
+                yearlyTrend = yearlyTrend,
             )
         } else {
             ExerciseListScreen(
@@ -101,7 +111,11 @@ fun ExerciseScreen(
 @Composable
 private fun ExerciseStatsScreen(
     weeklyStats: ExerciseInsights,
+    weeklyTrend: CompletionTrend,
     monthlyStats: ExerciseInsights,
+    monthlyTrend: CompletionTrend,
+    yearlyStats: ExerciseInsights,
+    yearlyTrend: CompletionTrend,
 ) {
     val locale = LocalLocale.current.platformLocale
     LazyColumn(
@@ -121,6 +135,8 @@ private fun ExerciseStatsScreen(
             ExerciseStatsSection(
                 title = stringResource(R.string.exercise_stats_this_week),
                 insights = weeklyStats,
+                trend = weeklyTrend,
+                trendComparisonLabel = stringResource(R.string.exercise_trend_previous_week),
                 locale = locale,
             )
         }
@@ -128,6 +144,17 @@ private fun ExerciseStatsScreen(
             ExerciseStatsSection(
                 title = stringResource(R.string.exercise_stats_this_month),
                 insights = monthlyStats,
+                trend = monthlyTrend,
+                trendComparisonLabel = stringResource(R.string.exercise_trend_previous_month),
+                locale = locale,
+            )
+        }
+        item {
+            ExerciseStatsSection(
+                title = stringResource(R.string.exercise_stats_this_year),
+                insights = yearlyStats,
+                trend = yearlyTrend,
+                trendComparisonLabel = stringResource(R.string.exercise_trend_previous_year),
                 locale = locale,
             )
         }
@@ -138,6 +165,8 @@ private fun ExerciseStatsScreen(
 private fun ExerciseStatsSection(
     title: String,
     insights: ExerciseInsights,
+    trend: CompletionTrend,
+    trendComparisonLabel: String,
     locale: Locale,
 ) {
     Card(
@@ -160,7 +189,12 @@ private fun ExerciseStatsSection(
                     color = MaterialTheme.colorScheme.secondary,
                 )
             } else {
-                InsightSummary(insights = insights, locale = locale)
+                InsightSummary(
+                    insights = insights,
+                    trend = trend,
+                    trendComparisonLabel = trendComparisonLabel,
+                    locale = locale,
+                )
                 insights.exerciseStats.forEach { stat ->
                     ExerciseStatRow(stat)
                 }
@@ -172,6 +206,8 @@ private fun ExerciseStatsSection(
 @Composable
 private fun InsightSummary(
     insights: ExerciseInsights,
+    trend: CompletionTrend,
+    trendComparisonLabel: String,
     locale: Locale,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -185,6 +221,7 @@ private fun InsightSummary(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.secondary,
         )
+        TrendInsightRow(trend, trendComparisonLabel)
         insights.bestWeekday?.let { weekday ->
             WeekdayInsightRow(
                 label = stringResource(R.string.exercise_insight_best_day),
@@ -200,6 +237,37 @@ private fun InsightSummary(
             )
         }
     }
+}
+
+@Composable
+private fun TrendInsightRow(
+    trend: CompletionTrend,
+    comparisonLabel: String,
+) {
+    val text = when (trend.direction) {
+        CompletionTrendDirection.UP -> stringResource(
+            R.string.exercise_insight_trend_up,
+            trend.percentagePointChange,
+            comparisonLabel,
+        )
+
+        CompletionTrendDirection.DOWN -> stringResource(
+            R.string.exercise_insight_trend_down,
+            trend.percentagePointChange,
+            comparisonLabel,
+        )
+
+        CompletionTrendDirection.UNCHANGED -> stringResource(
+            R.string.exercise_insight_trend_unchanged,
+            comparisonLabel,
+        )
+    }
+
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.secondary,
+    )
 }
 
 @Composable

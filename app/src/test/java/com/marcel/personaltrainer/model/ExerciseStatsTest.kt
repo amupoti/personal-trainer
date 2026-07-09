@@ -3,8 +3,8 @@ package com.marcel.personaltrainer.model
 import java.time.DayOfWeek
 import java.time.LocalDate
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ExerciseStatsTest {
@@ -130,6 +130,50 @@ class ExerciseStatsTest {
         assertEquals(100f, insights.percentage, 0.001f)
         assertEquals("today", insights.exerciseStats.single().activity.id)
     }
+
+    @Test
+    fun calculateCompletionTrendReturnsUpWhenCurrentPercentageIsHigher() {
+        val trend = calculateCompletionTrend(
+            current = insights(completedCount = 4, scheduledCount = 5),
+            previous = insights(completedCount = 2, scheduledCount = 5),
+        )
+
+        assertEquals(CompletionTrendDirection.UP, trend.direction)
+        assertEquals(40, trend.percentagePointChange)
+    }
+
+    @Test
+    fun calculateCompletionTrendReturnsDownWhenCurrentPercentageIsLower() {
+        val trend = calculateCompletionTrend(
+            current = insights(completedCount = 1, scheduledCount = 4),
+            previous = insights(completedCount = 3, scheduledCount = 4),
+        )
+
+        assertEquals(CompletionTrendDirection.DOWN, trend.direction)
+        assertEquals(50, trend.percentagePointChange)
+    }
+
+    @Test
+    fun calculateCompletionTrendReturnsUnchangedWhenPercentagesMatch() {
+        val trend = calculateCompletionTrend(
+            current = insights(completedCount = 1, scheduledCount = 2),
+            previous = insights(completedCount = 2, scheduledCount = 4),
+        )
+
+        assertEquals(CompletionTrendDirection.UNCHANGED, trend.direction)
+        assertEquals(0, trend.percentagePointChange)
+    }
+
+    private fun insights(
+        completedCount: Int,
+        scheduledCount: Int,
+    ) = ExerciseInsights(
+        completedCount = completedCount,
+        scheduledCount = scheduledCount,
+        exerciseStats = emptyList(),
+        bestWeekday = null,
+        weakestWeekday = null,
+    )
 
     private fun activity(id: String, weekdays: Set<DayOfWeek>) = Activity(
         id = id,

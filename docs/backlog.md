@@ -14,8 +14,6 @@
 - [ ] Make reminders smarter. Reminder text could include the actual remaining
   exercises and progress context, such as "Side plank and cobra left" or
   "Finish today to keep your 6-day streak".
-- [ ] Add previous week comparison to Insights. Show whether the current week is
-  up, down, or unchanged compared with the previous week.
 - [ ] Allow editing past days from Calendar. Selecting a past date should let the
   user correct completed exercises for that day.
 - [ ] Add custom exercise ordering. Let the user arrange the routine in a useful

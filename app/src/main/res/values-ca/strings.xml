@@ -46,9 +46,16 @@
     <string name="exercise_insights">Informació d\'exercicis</string>
     <string name="exercise_stats_this_week">Aquesta setmana</string>
     <string name="exercise_stats_this_month">Aquest mes</string>
+    <string name="exercise_stats_this_year">Aquest any</string>
     <string name="exercise_stats_empty">No hi ha exercicis programats en aquest període</string>
     <string name="exercise_stat_percentage">%1$d%%</string>
     <string name="exercise_insight_completed_of_scheduled">%1$d de %2$d programats completats (%3$d%%)</string>
+    <string name="exercise_insight_trend_up">Puja %1$d punts respecte a %2$s</string>
+    <string name="exercise_insight_trend_down">Baixa %1$d punts respecte a %2$s</string>
+    <string name="exercise_insight_trend_unchanged">Sense canvis respecte a %1$s</string>
+    <string name="exercise_trend_previous_week">la setmana anterior</string>
+    <string name="exercise_trend_previous_month">el mes anterior</string>
+    <string name="exercise_trend_previous_year">l\'any anterior</string>
     <string name="exercise_insight_best_day">Millor dia</string>
     <string name="exercise_insight_weakest_day">Dia més fluix</string>
     <string name="exercise_insight_weekday_detail">%1$s: %2$s, %3$d%%</string>
@@ -122,6 +129,7 @@
     <string name="view_changelog">Mostra el registre de canvis</string>
     <string name="close">Tanca</string>
     <string name="changelog_item">• %1$s</string>
+    <string name="changelog_v1115_insight_trends">S\'han afegit tendències setmanals, mensuals i anuals comparades amb períodes anteriors.</string>
     <string name="changelog_v1114_calendar_insights">S\'ha corregit el desplaçament del calendari mensual, s\'ha ordenat la informació d\'exercicis per ràtio de compleció i s\'ha mantingut el dia d\'avui als càlculs.</string>
     <string name="changelog_v1113_achievements_tab">S\'han mogut els assoliments a una pestanya de navegació pròpia.</string>
     <string name="changelog_v1112_changelog">S\'ha afegit un registre de canvis dins de l\'aplicació a Configuració.</string>

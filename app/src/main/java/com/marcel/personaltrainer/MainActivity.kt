@@ -344,7 +344,11 @@ private fun DailyMovementApp(
                     2 -> ExerciseScreen(
                         activities = state.allActivities,
                         weeklyStats = state.weeklyExerciseStats,
+                        weeklyTrend = state.weeklyExerciseTrend,
                         monthlyStats = state.monthlyExerciseStats,
+                        monthlyTrend = state.monthlyExerciseTrend,
+                        yearlyStats = state.yearlyExerciseStats,
+                        yearlyTrend = state.yearlyExerciseTrend,
                         onAdd = { addingExercise = true },
                         onEdit = { editingExerciseId = it.id },
                         onDelete = onDeleteActivity,
