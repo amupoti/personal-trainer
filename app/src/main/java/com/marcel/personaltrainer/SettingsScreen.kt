@@ -408,64 +408,8 @@ private data class ChangelogEntry(
 
 private val changelogEntries = listOf(
     ChangelogEntry(
-        version = "v1.1.14",
-        changes = listOf(R.string.changelog_v1114_calendar_insights),
-    ),
-    ChangelogEntry(
-        version = "v1.1.13",
-        changes = listOf(R.string.changelog_v1113_achievements_tab),
-    ),
-    ChangelogEntry(
-        version = "v1.1.12",
-        changes = listOf(R.string.changelog_v1112_changelog),
-    ),
-    ChangelogEntry(
-        version = "v1.1.11",
-        changes = listOf(R.string.changelog_v1111_perfect_achievements),
-    ),
-    ChangelogEntry(
-        version = "v1.1.10",
-        changes = listOf(R.string.changelog_v1110_milestone_badges),
-    ),
-    ChangelogEntry(
-        version = "v1.1.9",
-        changes = listOf(R.string.changelog_v119_weekly_goal),
-    ),
-    ChangelogEntry(
-        version = "v1.1.8",
-        changes = listOf(R.string.changelog_v118_app_icon),
-    ),
-    ChangelogEntry(
-        version = "v1.1.7",
-        changes = listOf(R.string.changelog_v117_exercise_insights),
-    ),
-    ChangelogEntry(
-        version = "v1.1.6",
-        changes = listOf(R.string.changelog_v116_smart_reminders),
-    ),
-    ChangelogEntry(
-        version = "v1.1.5",
-        changes = listOf(R.string.changelog_v115_exercise_stats),
-    ),
-    ChangelogEntry(
-        version = "v1.1.4",
-        changes = listOf(R.string.changelog_v114_extra_calendar),
-    ),
-    ChangelogEntry(
-        version = "v1.1.3",
-        changes = listOf(R.string.changelog_v113_calendar_completions),
-    ),
-    ChangelogEntry(
-        version = "v1.1.2",
-        changes = listOf(R.string.changelog_v112_gradle_jdk),
-    ),
-    ChangelogEntry(
-        version = "v1.1.1",
-        changes = listOf(R.string.changelog_v111_weekly_tracking),
-    ),
-    ChangelogEntry(
-        version = "v1.1.0",
-        changes = listOf(R.string.changelog_v110_streaks),
+        version = "v1.2.0",
+        changes = listOf(R.string.changelog_v120_reusable_shell),
     ),
     ChangelogEntry(
         version = "v1.0.0",

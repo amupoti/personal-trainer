@@ -17,16 +17,12 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.marcel.personaltrainer.data.ProgressRepository
-import com.marcel.personaltrainer.model.Activity
-import com.marcel.personaltrainer.model.ReminderNotificationSummary
 import com.marcel.personaltrainer.model.ReminderSettings
 import com.marcel.personaltrainer.model.delayUntilReminder
-import com.marcel.personaltrainer.model.reminderNotificationSummary
-import java.time.LocalDate
 import java.time.LocalTime
 import java.util.concurrent.TimeUnit
 
-class ExerciseReminderScheduler(context: Context) {
+class ReminderScheduler(context: Context) {
     private val context = context.applicationContext
     private val workManager = WorkManager.getInstance(this.context)
 
@@ -41,7 +37,7 @@ class ExerciseReminderScheduler(context: Context) {
     }
 
     private fun schedule(name: String, time: LocalTime) {
-        val request = PeriodicWorkRequestBuilder<ExerciseReminderWorker>(
+        val request = PeriodicWorkRequestBuilder<ReminderWorker>(
             24,
             TimeUnit.HOURS,
         )
@@ -55,11 +51,11 @@ class ExerciseReminderScheduler(context: Context) {
     }
 
     private companion object {
-        val WORK_NAMES = listOf("exercise-reminder-first", "exercise-reminder-second")
+        val WORK_NAMES = listOf("app-reminder-first", "app-reminder-second")
     }
 }
 
-class ExerciseReminderWorker(
+class ReminderWorker(
     context: Context,
     parameters: WorkerParameters,
 ) : Worker(context, parameters) {
@@ -68,16 +64,7 @@ class ExerciseReminderWorker(
         if (!repository.reminderSettings().enabled) {
             return Result.success()
         }
-        val date = LocalDate.now()
-        val summary = reminderNotificationSummary(
-            activities = repository.activities(),
-            completedIds = repository.completedActivityIds(date),
-            date = date,
-        ) ?: return Result.success()
-        showExerciseNotification(
-            context = applicationContext,
-            contentText = reminderContentText(applicationContext, summary),
-        )
+        showReminderNotification(applicationContext)
         return Result.success()
     }
 }
@@ -95,7 +82,7 @@ private fun createNotificationChannel(context: Context) {
         .createNotificationChannel(channel)
 }
 
-private fun showExerciseNotification(context: Context, contentText: String) {
+private fun showReminderNotification(context: Context) {
     if (
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
         ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
@@ -114,8 +101,11 @@ private fun showExerciseNotification(context: Context, contentText: String) {
     val notification = NotificationCompat.Builder(context, REMINDER_CHANNEL_ID)
         .setSmallIcon(R.drawable.app_icon)
         .setContentTitle(context.getString(R.string.reminder_notification_title))
-        .setContentText(contentText)
-        .setStyle(NotificationCompat.BigTextStyle().bigText(contentText))
+        .setContentText(context.getString(R.string.reminder_general_message))
+        .setStyle(
+            NotificationCompat.BigTextStyle()
+                .bigText(context.getString(R.string.reminder_general_message)),
+        )
         .setContentIntent(pendingIntent)
         .setAutoCancel(true)
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -123,48 +113,5 @@ private fun showExerciseNotification(context: Context, contentText: String) {
     NotificationManagerCompat.from(context).notify(REMINDER_NOTIFICATION_ID, notification)
 }
 
-private fun reminderContentText(
-    context: Context,
-    summary: ReminderNotificationSummary,
-): String {
-    if (summary.isGeneralReminder) {
-        return context.getString(R.string.reminder_general_message)
-    }
-
-    val names = summary.remainingActivities.joinToString(", ") { it.notificationName(context) }
-    val extraCount = summary.extraRemainingCount
-    return if (extraCount > 0) {
-        context.getString(
-            R.string.reminder_remaining_more_message,
-            summary.totalRemainingCount,
-            names,
-            extraCount,
-        )
-    } else {
-        context.getString(
-            R.string.reminder_remaining_message,
-            summary.totalRemainingCount,
-            names,
-        )
-    }
-}
-
-private fun Activity.notificationName(context: Context): String {
-    if (!usesLocalizedName) return name
-    val resource = when (id) {
-        "hamstring_stretch" -> R.string.exercise_hamstring_stretch
-        "glute_bridge" -> R.string.exercise_glute_bridge
-        "pelvic_tilt" -> R.string.exercise_pelvic_tilt
-        "cobra" -> R.string.exercise_cobra
-        "opposite_leg_pull" -> R.string.exercise_opposite_leg_pull
-        "band_arms" -> R.string.exercise_band_arms
-        "band_knees" -> R.string.exercise_band_knees
-        "standing_table_leg_curl" -> R.string.exercise_standing_table_leg_curl
-        "side_plank" -> R.string.exercise_side_plank
-        else -> return name
-    }
-    return context.getString(resource)
-}
-
-private const val REMINDER_CHANNEL_ID = "exercise_reminders"
+private const val REMINDER_CHANNEL_ID = "app_reminders"
 private const val REMINDER_NOTIFICATION_ID = 1101
