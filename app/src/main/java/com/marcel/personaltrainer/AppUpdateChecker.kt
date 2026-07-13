@@ -21,7 +21,7 @@ object AppUpdateChecker {
             connection.connectTimeout = 10_000
             connection.readTimeout = 10_000
             connection.setRequestProperty("Accept", "application/vnd.github+json")
-            connection.setRequestProperty("User-Agent", "daily-movement-android")
+            connection.setRequestProperty("User-Agent", "personal-trainer-android")
             check(connection.responseCode == HttpURLConnection.HTTP_OK) {
                 "GitHub returned HTTP ${connection.responseCode}"
             }

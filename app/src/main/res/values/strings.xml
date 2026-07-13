@@ -10,8 +10,8 @@
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_system">System</string>
-    <string name="title_daily_movement">Personal Trainer</string>
-    <string name="subtitle_daily_movement">Small steps, every day</string>
+    <string name="title_personal_trainer">Personal Trainer</string>
+    <string name="subtitle_personal_trainer">Small steps, every day</string>
     <string name="nothing_scheduled_today">Nothing scheduled today</string>
     <string name="no_exercises">No exercises yet</string>
     <string name="completed_count">%1$d of %2$d completed</string>
@@ -111,6 +111,11 @@
     <string name="reminder_general_message">Time for some movement today</string>
     <string name="reminder_remaining_message">%1$d left: %2$s</string>
     <string name="reminder_remaining_more_message">%1$d left: %2$s +%3$d more</string>
+    <string name="reminder_one_left_message">%1$s left</string>
+    <string name="reminder_two_left_message">%1$s and %2$s left</string>
+    <string name="reminder_three_left_message">%1$s, %2$s, and %3$s left</string>
+    <string name="reminder_progress_more_message">%1$d/%2$d done today: %3$s, %4$s, and %5$d more left</string>
+    <string name="reminder_keep_streak_message">Finish today to keep your %1$d-day streak</string>
     <string name="app_updates">App updates</string>
     <string name="current_version">Current version: %1$s</string>
     <string name="check_for_updates">Check for updates</string>
@@ -130,6 +135,7 @@
     <string name="view_changelog">View changelog</string>
     <string name="close">Close</string>
     <string name="changelog_item">• %1$s</string>
+    <string name="changelog_v1116_context_reminders">Made reminders show remaining exercises, progress, and streak context.</string>
     <string name="changelog_v1115_insight_trends">Added weekly, monthly, and yearly insight trends compared with previous periods.</string>
     <string name="changelog_v1114_calendar_insights">Fixed monthly calendar scrolling, sorted exercise insights by completeness ratio, and kept today in insight calculations.</string>
     <string name="changelog_v1113_achievements_tab">Moved achievements to their own navigation tab.</string>

@@ -20,6 +20,7 @@ import com.marcel.personaltrainer.data.ProgressRepository
 import com.marcel.personaltrainer.model.Activity
 import com.marcel.personaltrainer.model.ReminderNotificationSummary
 import com.marcel.personaltrainer.model.ReminderSettings
+import com.marcel.personaltrainer.model.calculateStreak
 import com.marcel.personaltrainer.model.delayUntilReminder
 import com.marcel.personaltrainer.model.reminderNotificationSummary
 import java.time.LocalDate
@@ -69,10 +70,13 @@ class ExerciseReminderWorker(
             return Result.success()
         }
         val date = LocalDate.now()
+        val activities = repository.activities()
+        val completionHistory = repository.completionHistory()
         val summary = reminderNotificationSummary(
-            activities = repository.activities(),
-            completedIds = repository.completedActivityIds(date),
+            activities = activities,
+            completedIds = completionHistory[date].orEmpty(),
             date = date,
+            currentStreak = calculateStreak(activities, completionHistory, date).current,
         ) ?: return Result.success()
         showExerciseNotification(
             context = applicationContext,
@@ -132,19 +136,39 @@ private fun reminderContentText(
     }
 
     val names = summary.remainingActivities.joinToString(", ") { it.notificationName(context) }
-    val extraCount = summary.extraRemainingCount
-    return if (extraCount > 0) {
-        context.getString(
+    return when {
+        summary.totalRemainingCount == 1 -> context.getString(
+            R.string.reminder_one_left_message,
+            names,
+        )
+        summary.totalRemainingCount == 2 && summary.remainingActivities.size == 2 -> context.getString(
+            R.string.reminder_two_left_message,
+            summary.remainingActivities[0].notificationName(context),
+            summary.remainingActivities[1].notificationName(context),
+        )
+        summary.totalRemainingCount == 3 && summary.remainingActivities.size == 3 -> context.getString(
+            R.string.reminder_three_left_message,
+            summary.remainingActivities[0].notificationName(context),
+            summary.remainingActivities[1].notificationName(context),
+            summary.remainingActivities[2].notificationName(context),
+        )
+        summary.completedCount > 0 && summary.remainingActivities.size >= 2 -> context.getString(
+            R.string.reminder_progress_more_message,
+            summary.completedCount,
+            summary.scheduledCount,
+            summary.remainingActivities[0].notificationName(context),
+            summary.remainingActivities[1].notificationName(context),
+            summary.extraRemainingCount,
+        )
+        summary.currentStreak > 0 -> context.getString(
+            R.string.reminder_keep_streak_message,
+            summary.currentStreak,
+        )
+        else -> context.getString(
             R.string.reminder_remaining_more_message,
             summary.totalRemainingCount,
             names,
-            extraCount,
-        )
-    } else {
-        context.getString(
-            R.string.reminder_remaining_message,
-            summary.totalRemainingCount,
-            names,
+            summary.extraRemainingCount,
         )
     }
 }

@@ -31,7 +31,7 @@ class ApkUpdateInstaller(private val context: Context) {
             .setDestinationInExternalFilesDir(
                 context,
                 Environment.DIRECTORY_DOWNLOADS,
-                "daily-movement-${release.versionName}-${System.currentTimeMillis()}.apk",
+                "personal-trainer-${release.versionName}-${System.currentTimeMillis()}.apk",
             )
         val downloadId = downloadManager.enqueue(request)
         return awaitDownload(downloadId)

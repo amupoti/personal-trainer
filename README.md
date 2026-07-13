@@ -1,4 +1,4 @@
-# Daily Movement
+# Personal Trainer
 
 An offline Android app for tracking completion of daily back exercises, stretches,
 walks, and runs.
@@ -48,7 +48,7 @@ up. Losing it prevents future APKs from updating an existing installation.
 ```shell
 keytool -genkeypair \
   -keystore release.jks \
-  -alias daily-movement \
+  -alias personal-trainer \
   -keyalg RSA \
   -keysize 4096 \
   -validity 10000
@@ -59,7 +59,7 @@ Actions secrets in the repository:
 
 - `RELEASE_KEYSTORE_BASE64`: output of `base64 -i release.jks | tr -d '\n'`
 - `RELEASE_STORE_PASSWORD`: keystore password
-- `RELEASE_KEY_ALIAS`: `daily-movement`
+- `RELEASE_KEY_ALIAS`: `personal-trainer`
 - `RELEASE_KEY_PASSWORD`: key password
 
 Publish a version:
@@ -69,8 +69,10 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
+Before each release, update `README.md` and `docs/backlog.md`.
+
 The app checks this repository's latest release from **Settings**. When a newer
 version is available, select **Download and install**, allow **Install unknown
-apps** for Daily Movement when prompted, and confirm the Android installation.
+apps** for Personal Trainer when prompted, and confirm the Android installation.
 Future versions signed with the same key can be installed over the existing app
 without losing its data.

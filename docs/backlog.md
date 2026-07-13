@@ -1,5 +1,9 @@
 # Backlog
 
+## Release Checklist
+
+- [ ] Update `README.md` and `docs/backlog.md` before each release.
+
 ## Future Ideas
 
 - [ ] Add a small completion celebration when all daily exercises are done. When
@@ -11,7 +15,7 @@
 - [ ] Add a "left today" summary. The Today screen should quickly say "3 left
   today", "All done", "Nothing scheduled today", or "2 left to keep your
   streak" depending on the current state.
-- [ ] Make reminders smarter. Reminder text could include the actual remaining
+- [x] Make reminders smarter. Reminder text could include the actual remaining
   exercises and progress context, such as "Side plank and cobra left" or
   "Finish today to keep your 6-day streak".
 - [ ] Allow editing past days from Calendar. Selecting a past date should let the

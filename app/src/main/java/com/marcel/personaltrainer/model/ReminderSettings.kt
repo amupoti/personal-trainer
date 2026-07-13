@@ -14,6 +14,9 @@ data class ReminderSettings(
 data class ReminderNotificationSummary(
     val remainingActivities: List<Activity> = emptyList(),
     val totalRemainingCount: Int = 0,
+    val completedCount: Int = 0,
+    val scheduledCount: Int = 0,
+    val currentStreak: Int = 0,
     val isGeneralReminder: Boolean = false,
 ) {
     val extraRemainingCount: Int
@@ -33,6 +36,7 @@ fun reminderNotificationSummary(
     completedIds: Set<String>,
     date: LocalDate,
     maxActivityNames: Int = 3,
+    currentStreak: Int = 0,
 ): ReminderNotificationSummary? {
     val scheduledActivities = activities.filter { it.isScheduledOn(date.dayOfWeek) }
     if (scheduledActivities.isEmpty()) {
@@ -45,6 +49,9 @@ fun reminderNotificationSummary(
     return ReminderNotificationSummary(
         remainingActivities = remainingActivities.take(maxActivityNames),
         totalRemainingCount = remainingActivities.size,
+        completedCount = scheduledActivities.size - remainingActivities.size,
+        scheduledCount = scheduledActivities.size,
+        currentStreak = currentStreak,
     )
 }
 

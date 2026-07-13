@@ -108,7 +108,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val state by viewModel.uiState.collectAsStateWithLifecycle()
             TimerSoundEffects(viewModel.timerSounds)
-            DailyMovementTheme(themePreference = state.themePreference) {
+            PersonalTrainerTheme(themePreference = state.themePreference) {
                 val notificationPermissionLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.RequestPermission(),
                 ) { granted ->
@@ -116,7 +116,7 @@ class MainActivity : ComponentActivity() {
                         viewModel.setRemindersEnabled(true)
                     }
                 }
-                DailyMovementApp(
+                PersonalTrainerApp(
                     state = state,
                     onCompletedChange = viewModel::setCompleted,
                     onCalendarPeriodChange = viewModel::setCalendarPeriod,
@@ -152,7 +152,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun DailyMovementTheme(
+private fun PersonalTrainerTheme(
     themePreference: ThemePreference,
     content: @Composable () -> Unit,
 ) {
@@ -232,7 +232,7 @@ private fun DailyMovementTheme(
 }
 
 @Composable
-private fun DailyMovementApp(
+private fun PersonalTrainerApp(
     state: ProgressUiState,
     onCompletedChange: (String, Boolean) -> Unit,
     onCalendarPeriodChange: (CalendarPeriod) -> Unit,
@@ -317,11 +317,11 @@ private fun DailyMovementApp(
             } else {
                 Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
                     Text(
-                        text = stringResource(R.string.title_daily_movement),
+                        text = stringResource(R.string.title_personal_trainer),
                         style = MaterialTheme.typography.headlineLarge,
                     )
                     Text(
-                        text = stringResource(R.string.subtitle_daily_movement),
+                        text = stringResource(R.string.subtitle_personal_trainer),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.secondary,
                     )
@@ -913,7 +913,7 @@ private fun ProgressScreenPreview() {
             targetUnit = TargetUnit.SECONDS,
         ),
     )
-    DailyMovementTheme(themePreference = ThemePreference.LIGHT) {
+    PersonalTrainerTheme(themePreference = ThemePreference.LIGHT) {
         ProgressScreen(
             state = ProgressUiState(
                 date = LocalDate.of(2026, 6, 27),

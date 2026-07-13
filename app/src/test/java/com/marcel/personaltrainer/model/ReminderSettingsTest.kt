@@ -44,6 +44,8 @@ class ReminderSettingsTest {
         )
 
         assertEquals(1, summary?.totalRemainingCount)
+        assertEquals(1, summary?.completedCount)
+        assertEquals(2, summary?.scheduledCount)
         assertEquals(listOf("remaining"), summary?.remainingActivities?.map(Activity::id))
         assertEquals(0, summary?.extraRemainingCount)
     }
@@ -62,9 +64,13 @@ class ReminderSettingsTest {
             activities = activities,
             completedIds = emptySet(),
             date = LocalDate.of(2026, 6, 29),
+            currentStreak = 6,
         )
 
         assertEquals(5, summary?.totalRemainingCount)
+        assertEquals(0, summary?.completedCount)
+        assertEquals(5, summary?.scheduledCount)
+        assertEquals(6, summary?.currentStreak)
         assertEquals(
             listOf("first", "second", "third"),
             summary?.remainingActivities?.map(Activity::id),
