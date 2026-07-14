@@ -134,6 +134,7 @@
     <string name="view_changelog">Mostra el registre de canvis</string>
     <string name="close">Tanca</string>
     <string name="changelog_item">• %1$s</string>
+    <string name="changelog_v1117_weekly_stats_fix">S\'ha corregit la informació setmanal perquè els exercicis completats comptin aquesta setmana.</string>
     <string name="changelog_v1116_context_reminders">S\'han fet els recordatoris més contextuals amb exercicis pendents, progrés i ratxa.</string>
     <string name="changelog_v1115_insight_trends">S\'han afegit tendències setmanals, mensuals i anuals comparades amb períodes anteriors.</string>
     <string name="changelog_v1114_calendar_insights">S\'ha corregit el desplaçament del calendari mensual, s\'ha ordenat la informació d\'exercicis per ràtio de compleció i s\'ha mantingut el dia d\'avui als càlculs.</string>

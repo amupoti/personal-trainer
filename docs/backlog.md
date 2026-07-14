@@ -30,4 +30,5 @@
 
 ## Issues
 
+- [x] Weekly exercise insights stayed at 0% after completing exercises today.
 - Cannot see phone time and battery on top due to same white color as the app. Works in the emulator, but not on the phone.

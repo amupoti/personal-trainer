@@ -135,6 +135,7 @@
     <string name="view_changelog">View changelog</string>
     <string name="close">Close</string>
     <string name="changelog_item">• %1$s</string>
+    <string name="changelog_v1117_weekly_stats_fix">Fixed weekly exercise insights so completed exercises count toward this week.</string>
     <string name="changelog_v1116_context_reminders">Made reminders show remaining exercises, progress, and streak context.</string>
     <string name="changelog_v1115_insight_trends">Added weekly, monthly, and yearly insight trends compared with previous periods.</string>
     <string name="changelog_v1114_calendar_insights">Fixed monthly calendar scrolling, sorted exercise insights by completeness ratio, and kept today in insight calculations.</string>

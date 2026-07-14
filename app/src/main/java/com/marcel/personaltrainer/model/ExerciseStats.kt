@@ -48,6 +48,7 @@ fun calculateExerciseStats(
     completionHistory: Map<LocalDate, Set<String>>,
     dates: List<LocalDate>,
 ): ExerciseInsights {
+    val activitiesById = activities.associateBy(Activity::id)
     val activityCounts = activities.associateWith { ActivityCounts() }.toMutableMap()
     val weekdayCounts = DayOfWeek.entries.associateWith { ActivityCounts() }.toMutableMap()
 
@@ -60,10 +61,12 @@ fun calculateExerciseStats(
                 activityCount.scheduled += 1
                 weekdayCount.scheduled += 1
                 if (activity.id in completedIds) {
-                    activityCount.completed += 1
                     weekdayCount.completed += 1
                 }
             }
+        }
+        completedIds.mapNotNull(activitiesById::get).forEach { activity ->
+            activityCounts.getValue(activity).completed += 1
         }
     }
 
@@ -72,11 +75,12 @@ fun calculateExerciseStats(
             if (counts.scheduled == 0) {
                 null
             } else {
+                val completed = minOf(counts.completed, counts.scheduled)
                 ExerciseStat(
                     activity = activity,
-                    completedCount = counts.completed,
+                    completedCount = completed,
                     scheduledCount = counts.scheduled,
-                    percentage = counts.completed * 100f / counts.scheduled,
+                    percentage = completed * 100f / counts.scheduled,
                 )
             }
         }

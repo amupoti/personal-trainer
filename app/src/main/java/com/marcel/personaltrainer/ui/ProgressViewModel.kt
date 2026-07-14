@@ -289,7 +289,7 @@ class ProgressViewModel(
         val weeklyStats = calculateExerciseStats(
             activities = activities,
             completionHistory = history,
-            dates = insightDatesForPeriod(date, CalendarPeriod.WEEK),
+            dates = datesForPeriod(date, CalendarPeriod.WEEK),
         )
         val monthlyStats = calculateExerciseStats(
             activities = activities,
@@ -321,7 +321,7 @@ class ProgressViewModel(
                 previous = calculateExerciseStats(
                     activities = activities,
                     completionHistory = history,
-                    dates = previousInsightDatesForPeriod(date, CalendarPeriod.WEEK),
+                    dates = datesForPeriod(date.minusWeeks(1), CalendarPeriod.WEEK),
                 ),
             ),
             monthlyExerciseTrend = calculateCompletionTrend(
@@ -358,7 +358,7 @@ class ProgressViewModel(
         val weeklyStats = calculateExerciseStats(
             activities = activities,
             completionHistory = history,
-            dates = insightDatesForPeriod(date, CalendarPeriod.WEEK),
+            dates = datesForPeriod(date, CalendarPeriod.WEEK),
         )
         val monthlyStats = calculateExerciseStats(
             activities = activities,
@@ -389,7 +389,7 @@ class ProgressViewModel(
                 previous = calculateExerciseStats(
                     activities = activities,
                     completionHistory = history,
-                    dates = previousInsightDatesForPeriod(date, CalendarPeriod.WEEK),
+                    dates = datesForPeriod(date.minusWeeks(1), CalendarPeriod.WEEK),
                 ),
             ),
             monthlyExerciseTrend = calculateCompletionTrend(

@@ -56,6 +56,44 @@ class ExerciseStatsTest {
     }
 
     @Test
+    fun calculateExerciseStatsCountsPeriodCompletionsTowardScheduledTarget() {
+        val activity = activity("stretch", setOf(DayOfWeek.WEDNESDAY))
+        val monday = LocalDate.of(2026, 7, 6)
+        val week = (0L..6L).map(monday::plusDays)
+
+        val insights = calculateExerciseStats(
+            activities = listOf(activity),
+            completionHistory = mapOf(monday to setOf(activity.id)),
+            dates = week,
+        )
+
+        assertEquals(1, insights.completedCount)
+        assertEquals(1, insights.scheduledCount)
+        assertEquals(100f, insights.percentage, 0.001f)
+        assertEquals(1, insights.exerciseStats.single().completedCount)
+        assertEquals(1, insights.exerciseStats.single().scheduledCount)
+    }
+
+    @Test
+    fun calculateExerciseStatsCapsExtraCompletionsAtScheduledTarget() {
+        val activity = activity("stretch", setOf(DayOfWeek.WEDNESDAY))
+        val monday = LocalDate.of(2026, 7, 6)
+        val week = (0L..6L).map(monday::plusDays)
+
+        val insights = calculateExerciseStats(
+            activities = listOf(activity),
+            completionHistory = week.associateWith { setOf(activity.id) },
+            dates = week,
+        )
+
+        assertEquals(1, insights.completedCount)
+        assertEquals(1, insights.scheduledCount)
+        assertEquals(100f, insights.percentage, 0.001f)
+        assertEquals(1, insights.exerciseStats.single().completedCount)
+        assertEquals(1, insights.exerciseStats.single().scheduledCount)
+    }
+
+    @Test
     fun calculateExerciseStatsReturnsEmptyInsightsWhenThereAreNoScheduledExercises() {
         val insights = calculateExerciseStats(
             activities = listOf(activity("first", setOf(DayOfWeek.TUESDAY))),

@@ -30,6 +30,9 @@ The APK is generated at:
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
+Latest release note: v1.1.17 fixes weekly exercise insights so completed
+exercises count toward the current week.
+
 Install it on a connected phone with USB debugging enabled:
 
 ```shell
